@@ -1,0 +1,22 @@
+#temp text editor files
+*~
+
+# Ignore index.html files
+index.html
+www/index.html
+
+# Ignore .htacces file
+www/.htaccess
+.htaccess
+
+# Ignore files in the files folder
+www/sites/default/files
+
+# Ignore settings php files. 
+web/sites/default/settings.php
+web/sites/default/settings-local.php
+web/sites/default/settings.local.php
+
+
+# Ignore IDE files
+.idea
