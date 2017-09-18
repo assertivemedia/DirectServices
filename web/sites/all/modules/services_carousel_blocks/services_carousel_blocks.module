@@ -1,0 +1,686 @@
+<?php
+/**
+ * Implements hook_block_info().
+ */
+function services_carousel_blocks_block_info() {
+  $blocks['our_services_carousel'] = array(
+    'info' => t('Our services carousel'),
+    'title' => NULL,
+	'cache' => DRUPAL_NO_CACHE
+  );
+  $blocks['gallery_carousel'] = array(
+    'info' => t('Gallery Carousel'),
+    'title' => NULL,
+	'cache' => DRUPAL_NO_CACHE
+  );
+  $blocks['other_services'] = array(
+    'info' => t('Other Services'),
+    'title' => NULL,
+	'cache' => DRUPAL_NO_CACHE
+	
+  );
+  $blocks['popular_conatainer_carousel'] = array(
+    'info' => t('Popular Containers'),
+    'title' => NULL,
+	'cache' => DRUPAL_NO_CACHE
+	
+  );
+  $blocks['service_page_gallley_carousel'] = array(
+    'info' => t('Service page Gallery'),
+    'title' => NULL,
+	'cache' => DRUPAL_NO_CACHE
+	
+  );
+  $blocks['about_section_services'] = array(
+    'info' => t('About Section Services'),
+    'title' => NULL,
+	'cache' => DRUPAL_NO_CACHE
+	
+  );
+  $blocks['pest_control_carousel'] = array(
+    'info' => t('Pest Control Gallery'),
+    'title' => NULL,
+	'cache' => DRUPAL_NO_CACHE
+	
+  );
+  /*$blocks['other_services1'] = array(
+    'info' => t('Other Services1'),
+    'title' => NULL,
+	
+  );*/
+  
+  return $blocks;
+}
+/**
+ * Implements hook_block_view().
+*/
+function services_carousel_blocks_block_view($delta = '') {
+  if ($delta == 'our_services_carousel') {
+    $block['subject'] = t('Our Services');
+    $block['content'] = services_carousel_blocks_our_services_carousel();
+  }
+  if ($delta == 'gallery_carousel') {
+    $block['subject'] = t('Gallery');
+    $block['content'] = services_carousel_blocks_gallery_carousel();
+  }
+  if ($delta == 'other_services') {
+    $block['subject'] = t('Other Services');
+    $block['content'] = services_carousel_blocks_other_services();
+  }
+  /*if ($delta == 'other_services1') {
+    $block['subject'] = t('<h3 class="block-title">Other Services</h3>');
+    $block['content'] = services_carousel_blocks_other_services();
+  }*/
+  if ($delta == 'popular_conatainer_carousel') {
+    $block['subject'] = t('Popular Containers');
+    $block['content'] = services_carousel_blocks_popular_conatainer();
+  }
+  if ($delta == 'service_page_gallley_carousel') {
+    
+    $nid = arg(1);
+	$node = node_load($nid);
+	
+	$gallery_title = field_get_items('node', $node, 'field_gallery_title', $node->language);
+	
+	$gallery_image = field_get_items('node', $node, 'field_gallery_image', $node->language);
+	if($node->type == 'services' && !empty($gallery_image) && !empty($gallery_title))
+	{
+		$block['subject'] = t($gallery_title[0]['value']);
+    	$block['content'] = services_carousel_blocks_service_page_gallery();
+	} else {
+	
+		$block['subject'] = '';
+    	$block['content'] = '';
+	}
+  }
+  
+  if ($delta == 'about_section_services') {
+    $block['subject'] = t('');
+    $block['content'] = services_carousel_blocks_about_services();
+  }
+  if ($delta == 'pest_control_carousel') {
+    $block['subject'] = t('Gallery');
+    $block['content'] = services_carousel_blocks_pest_carousel();
+  }
+  return $block;
+}
+
+/* Generate our services carousel */
+function services_carousel_blocks_our_services_carousel(){
+  		
+		$query = new EntityFieldQuery();
+		$query->entityCondition('entity_type', 'node')
+		  ->entityCondition('bundle', 'services')
+		  ->propertyCondition('status', NODE_PUBLISHED)		  
+		  ->fieldCondition('field_service_category', 'tid', 'NULL', '!=')
+		  ->addTag('filter_no_parent')
+		  ->propertyOrderBy('created', 'DESC');
+		  //->range(0,15);
+		//print_r($query);
+		$result = $query->execute();
+		
+		if (isset($result['node'])) {
+	  		$nids = array_keys($result['node']);
+	  		$nodes = entity_load('node', $nids);
+		}else{
+			$nodes = array();
+		}
+	
+	  $services = $nodes;
+	  //print_r($services); 	
+	  
+	 
+	  //$array = array('Service1','Service2','Service3','Service4','Service5');
+	  $output = '<div id="service-carousel" class="owl-carousel owl-theme">';
+	  foreach ($services as $service) {
+		  $alias = drupal_get_path_alias('node/'.$service->nid);
+		  $banner = field_get_items('node', $service, 'field_service_image', $service->language);
+		  $icon = field_get_items('node', $service, 'field_icon', $service->language);
+		//$uri = $banner[0]['uri'];  // file path as uri: 'public://';
+		$banner_img = file_create_url($banner[0]['uri']);
+		$icon_img = file_create_url($icon[0]['uri']);
+		$output .= '<div class="item">';
+		$output .= '<div class="product-wrapper">';
+		$output .= '<a href="/'.$alias.'"><div class="product" style="background-image:url('.$banner_img.');"></div>
+		             <div class="product-content"> 					 
+					 <div class="producut-icon" style="background-image: url('.$icon_img.');"></div>
+					 <div class="product-title">'.truncate_utf8($service->title,40,TRUE,TRUE).'  <i class="fa fa-angle-right" aria-hidden="true"></i></div>
+					 </div>
+				   </a></div>';			
+		$output .= '</div>';
+	  }
+	  $output .= '</div>';
+	  /*$output .= '<div id="myCarousel2">
+		<a class="left carousel-control" href="#" role="button" data-slide="prev">
+<i class="fa fa-angle-left" aria-hidden="true"></i>
+</a>
+<a class="right carousel-control" href="#" role="button" data-slide="next">
+<i class="fa fa-angle-right" aria-hidden="true"></i>
+</a>		
+	  </div>';*/
+	  $output .= '<div class="see-full">
+				    <a href="/services">See Full List</a>
+				  </div>';
+	  /*$output .= '<div class="customNavigation">
+		<a class="btn prev">Previous</a>
+		<a class="btn next">Next</a>
+		<a class="btn play">Autoplay</a>
+		<a class="btn stop">Stop</a>
+	  </div>';*/
+	
+	  //drupal_add_css('/css/owl.carousel.css');
+	  /*drupal_add_css(drupal_get_path('module', 'services_carousel_blocks') . '/css/owl.carousel.css');
+	  drupal_add_css(drupal_get_path('module', 'services_carousel_blocks') . '/css/owl.theme.default.css');
+	  drupal_add_js(drupal_get_path('module', 'services_carousel_blocks') .'/js/owl.carousel.js');*/
+	  
+	  drupal_add_js('jQuery.noConflict();
+	  				jQuery(document).ready(function() {			
+		
+		  
+		  var owl = jQuery("#service-carousel");
+		  owl.owlCarousel({
+			loop : true,  			
+			dots: true,			
+			margin : 10,
+			navText: ["<i class=\"fa fa-angle-left\" aria-hidden=\"true\"></i>","<i class=\"fa fa-angle-right\" aria-hidden=\"true\"></i>"],
+			responsive:{
+				0:{
+					items:1,
+					nav:true
+				},
+				600:{
+					items:3,
+					nav:true
+				},
+				1000:{
+					items:4,
+					nav:true															
+				}
+			}
+						
+		  });
+		  
+		});', 'inline');
+	
+	  return $output;
+}
+function services_carousel_blocks_query_filter_no_parent_alter(QueryAlterableInterface $query) {
+    $query->leftJoin('field_data_field_parent_services', 'p', 'node.nid = p.entity_id');
+    $query->isNull('p.field_parent_services_target_id');
+}
+function services_carousel_blocks_gallery_carousel(){
+		$term_id = arg(2);
+		
+		$query = new EntityFieldQuery();
+		$query->entityCondition('entity_type', 'node')
+		  ->entityCondition('bundle', 'services')
+		  ->propertyCondition('status', NODE_PUBLISHED)
+		  ->fieldCondition('field_service_category', 'tid', $term_id)
+		  //->fieldCondition('field_parent_services', 'target_id', NULL,'IS NULL')
+		  ->addTag('filter_no_parent')         
+		  ->propertyOrderBy('created', 'DESC')	
+		  ->range(0,15); 
+		//print_r($query);
+		$result = $query->execute();
+		//print_r($result['node']);
+		if (isset($result['node'])) {
+	  		$nids = array_keys($result['node']);
+	  		$nodes = entity_load('node', $nids);
+		}else{
+			$nodes = array();
+		}
+	
+	  $services = $nodes;
+	  //print_r($services);
+	  $output = '<div id="gallery-carousel" class="owl-carousel owl-theme">';
+	  foreach ($services as $service) {
+		  //print_r($service);
+		  $alias = drupal_get_path_alias('node/'.$service->nid);
+		  $banner = field_get_items('node', $service, 'field_service_image', $service->language);
+		//$uri = $banner[0]['uri'];  // file path as uri: 'public://';
+		$banner_img = file_create_url($banner[0]['uri']);
+		$output .= '<div class="item">';
+		$output .= '<a href="'.$banner_img.'" data-lightbox="carousel-gal" data-title="'.$service->title.'"><div class="product" style="background-image:url('.$banner_img.');">
+					 					 
+				   </div>';			
+		$output .= '</a></div>';
+	  }
+	  $output .= '</div>';	  
+	
+	  
+	  /*drupal_add_css(drupal_get_path('module', 'services_carousel_blocks') . '/css/owl.carousel.css');
+	  drupal_add_css(drupal_get_path('module', 'services_carousel_blocks') . '/css/owl.theme.default.css');
+	  drupal_add_js(drupal_get_path('module', 'services_carousel_blocks') .'/js/owl.carousel.js');*/
+	  drupal_add_js('jQuery.noConflict();
+	  	jQuery(document).ready(function() {
+		  lightbox.option({
+		  	"resizeDuration": 200,
+		  	"wrapAround": true,
+			"alwaysShowNavOnTouchDevices": true
+		  });
+		  
+		  var owl = jQuery("#gallery-carousel");
+		  owl.owlCarousel({
+			loop : true,  			
+			dots: true,			
+			margin : 10,
+			navText: ["<i class=\"fa fa-angle-left\" aria-hidden=\"true\"></i>","<i class=\"fa fa-angle-right\" aria-hidden=\"true\"></i>"],
+			responsive:{
+				0:{
+					items:1,
+					nav:true
+				},
+				600:{
+					items:3,
+					nav:true
+				},
+				1000:{
+					items:4,
+					nav:true															
+				}
+			}
+						
+		  });
+		  
+		});', 'inline');
+	
+	  return $output;
+}
+function services_carousel_blocks_other_services(){
+	
+	$current_term = taxonomy_term_load(arg(2));
+	//print_r($current_term); 
+	
+	if(!empty($current_term)) {
+		 $query = new EntityFieldQuery();
+		 $query->entityCondition('entity_type', 'taxonomy_term')
+			->entityCondition('bundle', array('services'))		
+			->propertyCondition('tid', $current_term->tid, '!=')
+			->fieldCondition('field_private_resident_', 'value', 0, '=');
+		 $result = $query->execute();
+		 //$tids = array_keys($result['taxonomy_term']);
+		 //print_r($result);
+		 
+		 if (isset($result['taxonomy_term'])) {
+			$tids = array_keys($result['taxonomy_term']);
+			$terms = entity_load('taxonomy_term', $tids);
+		}else{
+			$terms = array();
+		}
+	} else { 
+		$vocabulary = taxonomy_vocabulary_machine_name_load('services');
+		//$terms = entity_load('taxonomy_term', FALSE, array('vid' => $vocabulary->vid));
+		//print_r($terms);
+		$query = new EntityFieldQuery();
+		 $query->entityCondition('entity_type', 'taxonomy_term')
+			->entityCondition('bundle', array('services'))		
+			->propertyCondition('vid', $vocabulary->vid, '=')
+			->fieldCondition('field_private_resident_', 'value', 0, '=');
+		 $result = $query->execute();
+		 //$tids = array_keys($result['taxonomy_term']);
+		 //print_r($result);
+		 
+		 if (isset($result['taxonomy_term'])) {
+			$tids = array_keys($result['taxonomy_term']);
+			$terms = entity_load('taxonomy_term', $tids);
+		}else{
+			$terms = array();
+		}
+	}
+	
+	$output = '<div id="other-service-wrapper"><div class="row">';
+	
+    foreach($terms as $term)
+	{
+			
+		$alias = drupal_get_path_alias('taxonomy/term/'.$term->tid);
+		$banner = field_get_items('taxonomy_term', $term, 'field_service_image');		
+		$banner_img = file_create_url($banner[0]['uri']);
+		
+		$icon = field_get_items('taxonomy_term', $term, 'field_icon');		
+		$icon_img = file_create_url($icon[0]['uri']);
+		
+	
+    	$output .= '<div class="col-lg-3 col">
+					<div class="other-service-box">
+					<a href="/'.$alias.'">';
+		//$output .= '<img class="img-responsive" src="'.$banner_img.'">';
+		$output .= '<div class="service-image" style="background-image:url('.$banner_img.');"></div>';
+		$output .= '<div class="img-overlay">
+						<div class="overlay-content">
+        					<div class="overlay-content-inner">
+								<div class="term_icon" style="background-image: url('.$icon_img.');"></div>
+								<div class="term_title">'.$term->name.'</div>
+							</div>
+						</div>					
+					</div>';
+        $output .= '</a></div></div>';
+	
+	} 
+		/*== Static box for Pest Control ==*/ 
+		$output .= '<div class="col-lg-3 col">
+		         	<div class="other-service-box">
+					<a href="/pest-control">';
+		//$output .= '<img class="img-responsive" src="'.$banner_img.'">';
+		$output .= '<div class="service-image" style="background-image:url('.base_path().path_to_theme().'/images/pest-control.jpg);"></div>';
+		$output .= '<div class="img-overlay">
+						<div class="overlay-content">
+        					<div class="overlay-content-inner">
+								<div class="term_icon" style="background-image: url('.base_path().path_to_theme().'/images/pest-control.png);"></div>
+								<div class="term_title">Pest Control</div>	 
+							</div>
+						</div>		
+					</div>';
+        $output .= '</a></div></div>';
+		/*== Static box for private Resident ==*/ 
+		$output .= '<div class="col-lg-3 col">
+		         	<div class="other-service-box">
+					<a href="/services-residents">';
+		//$output .= '<img class="img-responsive" src="'.$banner_img.'">';
+		$output .= '<div class="service-image" style="background-image:url('.base_path().path_to_theme().'/images/commercial_recycling.jpg);"></div>';
+		$output .= '<div class="img-overlay">
+						<div class="overlay-content">
+        					<div class="overlay-content-inner">
+								<div class="term_icon" style="background-image: url('.base_path().path_to_theme().'/images/resident-services.png);"></div>
+								<div class="term_title">
+Services for Residents</div>
+							</div>
+						</div>		 
+					</div>';
+        $output .= '</a></div></div>';
+	$output .= '</div></div>';
+    
+	return $output;
+}
+function services_carousel_blocks_popular_conatainer(){		
+	  
+	  $output = '<div id="gallery-carousel" class="owl-carousel owl-theme">';
+	  
+	  $output .= '<div class="item">';
+	  $output .= '<div class="product" style="background-image:url(/sites/default/files/bin-container-1.jpg);">					 					 
+				   </div>';			
+	  $output .= '</div>';
+	  
+	  $output .= '<div class="item">';
+	  $output .= '<div class="product" style="background-image:url(/sites/default/files/bin-container-2.jpg);">					 					 
+				   </div>';			
+	  $output .= '</div>';
+	  
+	  $output .= '<div class="item">';
+	  $output .= '<div class="product" style="background-image:url(/sites/default/files/bin-container-1.jpg);">					 					 
+				   </div>';			
+	  $output .= '</div>';
+	  
+	  $output .= '<div class="item">';
+	  $output .= '<div class="product" style="background-image:url(/sites/default/files/bin-container-2.jpg);">					 					 
+				   </div>';			
+	  $output .= '</div>';
+	  
+	  $output .= '<div class="item">';
+	  $output .= '<div class="product" style="background-image:url(/sites/default/files/bin-container-1.jpg);">					 					 
+				   </div>';			
+	  $output .= '</div>';
+	  $output .= '</div>';  	  
+	 /*drupal_add_css(drupal_get_path('module', 'services_carousel_blocks') . '/css/owl.carousel.css');
+	  drupal_add_css(drupal_get_path('module', 'services_carousel_blocks') . '/css/owl.theme.default.css');
+	  drupal_add_js(drupal_get_path('module', 'services_carousel_blocks') .'/js/owl.carousel.js');*/
+	  drupal_add_js('jQuery(document).ready(function() {
+		  var owl = jQuery("#gallery-carousel");
+		  owl.owlCarousel({
+			loop : true,  			
+			dots: true,			
+			margin : 10,
+			navText: ["<i class=\"fa fa-angle-left\" aria-hidden=\"true\"></i>","<i class=\"fa fa-angle-right\" aria-hidden=\"true\"></i>"],
+			responsive:{
+				0:{
+					items:1,
+					nav:true
+				},
+				600:{
+					items:3,
+					nav:true
+				},
+				1000:{
+					items:4,
+					nav:true															
+				}
+			}
+						
+		  });
+		  
+		});', 'inline');
+	
+	  return $output;
+}
+function services_carousel_blocks_about_services(){
+	$vocabulary = taxonomy_vocabulary_machine_name_load('services');
+	$terms = entity_load('taxonomy_term', FALSE, array('vid' => $vocabulary->vid));
+	
+	$output ='<div class="about-blog-area">'; 
+	$i = 1;
+	foreach($terms as $term)
+	{		
+		$icon = field_get_items('taxonomy_term', $term, 'field_icon');		
+		$icon_img = file_create_url($icon[0]['uri']);
+		
+		$output.='<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+					<div class="about-services" data-content="content-'.$i.'">
+						<div class="blog-1">
+							<div class="about-service-icon" style="background-image: url('.$icon_img.');"></div>
+							<div class="about-service-title">'.$term->name.'</div>            
+						</div>
+					</div>
+				</div>';
+		$i++;	
+		$j = $i;			
+	}
+	$output.='<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+					<div class="about-services" data-content="content-'.$j.'">
+						<div class="blog-1">
+							<div class="about-service-icon" style="background-image: url(/sites/all/themes/oxford/images/pest-control.png);"></div>
+							<div class="about-service-title">Pest Control</div>            
+						</div>
+					</div>
+				</div>';
+	
+	$output.='</div>';
+	
+	$output.='<div class="about-blog-content-area col-sm-12">';
+	$i = 1;
+	foreach($terms as $term)
+	{
+		$query = new EntityFieldQuery();
+		$query->entityCondition('entity_type', 'node')
+		  ->entityCondition('bundle', 'services')
+		  ->propertyCondition('status', NODE_PUBLISHED)
+		  ->fieldCondition('field_service_category', 'tid', $term->tid)
+		  ->propertyOrderBy('created', 'DESC')	
+		  ->range(0,15);
+		//print_r($query);
+		$result = $query->execute();
+		
+		if (isset($result['node'])) {
+	  		$nids = array_keys($result['node']);
+	  		$nodes = entity_load('node', $nids);
+		}else{
+			$nodes = array();
+		}
+	
+	    $services = $nodes;	
+		
+		$output.='<div class="blog-content col-sm-12 content-'.$i.'" style="display:none;">        	
+						<h3>'.$term->name.'</h3>'; 
+						$output .='<ul>';
+						foreach($services as $service)
+						{
+						$alias = drupal_get_path_alias('node/'.$service->nid);
+						$output .='<li><a href="'.$alias.'"><i class="fa fa-angle-double-right"></i>&nbsp;'.$service->title.'</a></li>';											
+						}
+						$output .='</ul>';					            
+		$output.='</div>';  
+				  
+		$i++;
+		$j = $i;	
+	}
+		$output.='<div class="blog-content col-sm-12 content-'.$j.'" style="display:none;">        	
+						<h3>Pest Control</h3>'; 
+						$output .='<ul>';
+						$output .='<li><i class="fa fa-angle-double-right"></i>&nbsp;Regular routine visits</li>
+						           <li><i class="fa fa-angle-double-right"></i>&nbsp;Reactive emergency visits</li>
+								   <li><i class="fa fa-angle-double-right"></i>&nbsp;Preventative monitoring</li>
+								   <li><i class="fa fa-angle-double-right"></i>&nbsp;Preventative treatments</li>
+								   <li><i class="fa fa-angle-double-right"></i>&nbsp;Reactive treatments</li>
+								   <li><i class="fa fa-angle-double-right"></i>&nbsp;Recommendations on proofing and housekeeping</li>
+								   <li><i class="fa fa-angle-double-right"></i>&nbsp;Bird proofing, trapping and shooting</li>
+								   <li><i class="fa fa-angle-double-right"></i>&nbsp;Other proofing services</li>
+								   <li><i class="fa fa-angle-double-right"></i>&nbsp;Insect identification</li>
+								   <li><i class="fa fa-angle-double-right"></i>&nbsp;Electric fly killer maintenance</li>';
+						$output .='</ul>';					            
+		$output.='</div>';
+	$output.='</div>';
+	 
+	
+	return $output;
+}
+function services_carousel_blocks_pest_carousel(){		
+	  
+	  $output = '<div id="pest-carousel" class="owl-carousel owl-theme">';
+	  
+	  $output .= '<div class="item">';
+	  $output .= '<a href="'.base_path().path_to_theme().'/images/pest-control/DS_Pest_Control_Treatments_1.jpg" data-lightbox="carousel-pest" ><div class="product" style="background-image:url('.base_path().path_to_theme().'/images/pest-control/DS_Pest_Control_Treatments_1.jpg);">					 					 
+				   </div></a>';			
+	  $output .= '</div>';
+	  
+	  $output .= '<div class="item">';
+	   $output .= '<a href="'.base_path().path_to_theme().'/images/pest-control/DS_Pest_Control_Treatments_2.jpg" data-lightbox="carousel-pest" ><div class="product" style="background-image:url('.base_path().path_to_theme().'/images/pest-control/DS_Pest_Control_Treatments_2.jpg);">					 					 
+				   </div></a>';		
+	  $output .= '</div>';
+	  
+	  $output .= '<div class="item">';
+	   $output .= '<a href="'.base_path().path_to_theme().'/images/pest-control/DS_Pest_Control_Treatments_3.jpg" data-lightbox="carousel-pest" ><div class="product" style="background-image:url('.base_path().path_to_theme().'/images/pest-control/DS_Pest_Control_Treatments_3.jpg);">					 					 
+				   </div></a>';			
+	  $output .= '</div>';
+	  
+	  $output .= '<div class="item">';
+	   $output .= '<a href="'.base_path().path_to_theme().'/images/pest-control/DS_Pest_Control_Treatments_4.jpg" data-lightbox="carousel-pest" ><div class="product" style="background-image:url('.base_path().path_to_theme().'/images/pest-control/DS_Pest_Control_Treatments_4.jpg);">					 					 
+				   </div></a>';		
+	  $output .= '</div>';
+	  
+	  $output .= '<div class="item">';
+	   $output .= '<a href="'.base_path().path_to_theme().'/images/pest-control/DS_Pest_Control_Treatments_5.jpg" data-lightbox="carousel-pest" ><div class="product" style="background-image:url('.base_path().path_to_theme().'/images/pest-control/DS_Pest_Control_Treatments_5.jpg);">					 					 
+				   </div></a>';			
+	  $output .= '</div>';
+	  
+	  $output .= '<div class="item">';
+	   $output .= '<a href="'.base_path().path_to_theme().'/images/pest-control/DS_Pest_Control_Treatments_6.jpg" data-lightbox="carousel-pest" ><div class="product" style="background-image:url('.base_path().path_to_theme().'/images/pest-control/DS_Pest_Control_Treatments_6.jpg);">					 					 
+				   </div></a>';			
+	  $output .= '</div>';
+	  
+	  $output .= '<div class="item">';
+	   $output .= '<a href="'.base_path().path_to_theme().'/images/pest-control/DS_Pest_Control_Treatments_7.jpg" data-lightbox="carousel-pest" ><div class="product" style="background-image:url('.base_path().path_to_theme().'/images/pest-control/DS_Pest_Control_Treatments_7.jpg);">					 					 
+				   </div></a>';			
+	  $output .= '</div>';
+	  
+	  $output .= '<div class="item">';
+	   $output .= '<a href="'.base_path().path_to_theme().'/images/pest-control/DS_Pest_Control_Treatments_8.jpg" data-lightbox="carousel-pest" ><div class="product" style="background-image:url('.base_path().path_to_theme().'/images/pest-control/DS_Pest_Control_Treatments_8.jpg);">					 					 
+				   </div></a>';			
+	  $output .= '</div>';
+	  
+	  $output .= '<div class="item">';
+	   $output .= '<a href="'.base_path().path_to_theme().'/images/pest-control/DS_Pest_Control_Treatments_9.jpg" data-lightbox="carousel-pest" ><div class="product" style="background-image:url('.base_path().path_to_theme().'/images/pest-control/DS_Pest_Control_Treatments_9.jpg);">					 					 
+				   </div></a>';			
+	  $output .= '</div>';
+	  $output .= '</div>';  	  
+	
+	  drupal_add_js('jQuery.noConflict();
+	  	jQuery(document).ready(function() {
+		  lightbox.option({
+		  	"resizeDuration": 200,
+		  	"wrapAround": true,
+			"alwaysShowNavOnTouchDevices": true
+		  });
+		  var owl = jQuery("#pest-carousel");
+		  owl.owlCarousel({
+			loop : true,  			
+			dots: true,			
+			margin : 10,
+			navText: ["<i class=\"fa fa-angle-left\" aria-hidden=\"true\"></i>","<i class=\"fa fa-angle-right\" aria-hidden=\"true\"></i>"],
+			responsive:{
+				0:{
+					items:1,
+					nav:true
+				},
+				600:{
+					items:3,
+					nav:true
+				},
+				1000:{
+					items:4,
+					nav:true															
+				}
+			}
+						
+		  });
+		  
+		});', 'inline');
+	
+	  return $output;
+}
+function services_carousel_blocks_service_page_gallery()
+{
+	$nid = arg(1);
+	$node = node_load($nid);		
+	
+	$gallery_images = field_get_items('node', $node, 'field_gallery_image', $node->language);
+	
+	$output = '<div id="gallery-carousel" class="owl-carousel owl-theme">';
+	  foreach($gallery_images as $gallery_image)
+	  {			  		
+			$gallery_img = file_create_url($gallery_image['uri']);
+		  
+	  		$output .= '<div class="item"><div class="product-container">';
+	  		$output .= '<a href="'.$gallery_img.'" data-lightbox="service-page-gal">				 									 						<div class="product" style="background-image:url('.$gallery_img.');">			 				   						</div>';
+			if($gallery_image['title'] != "")
+			{
+				$output .= '<div class="product-title">'.$gallery_image['title'].'</div>';				
+			}
+			$output .= '</a>';			
+	  		$output .= '</div></div>';
+	  }
+	$output .= '</div>'; 
+	
+	drupal_add_js('jQuery.noConflict();
+	  	jQuery(document).ready(function() {
+		  lightbox.option({
+		  	"resizeDuration": 200,
+		  	"wrapAround": true,
+			"alwaysShowNavOnTouchDevices": true
+		  });
+	  var owl = jQuery("#gallery-carousel");
+	  owl.owlCarousel({
+		loop : true,  			
+		dots: true,			
+		margin : 10,
+		navText: ["<i class=\"fa fa-angle-left\" aria-hidden=\"true\"></i>","<i class=\"fa fa-angle-right\" aria-hidden=\"true\"></i>"],
+		responsive:{
+			0:{
+				items:1,
+				nav:true
+			},
+			600:{
+				items:3,
+				nav:true
+			},
+			1000:{
+				items:4,
+				nav:true															
+			}
+		}
+					
+	  });
+	  
+	});', 'inline'); 
+	
+	return $output;
+}
+?>  

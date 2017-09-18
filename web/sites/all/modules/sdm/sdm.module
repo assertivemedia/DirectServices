@@ -1,0 +1,449 @@
+<?php
+/**
+ * @file
+ * sdm.module
+ */
+
+/**
+ * Implements hook_init().
+ */
+function sdm_init() {
+  if($contexts = context_active_contexts()) {
+    foreach ($contexts as $context) {
+      if (isset($context->reactions['sdm_markup'])) {
+        if ($plugin = context_get_plugin('reaction', 'sdm_markup')) {
+          $plugin->execute($context->reactions['sdm_markup']['sdm_entities']);
+        }
+      }
+    }
+  }
+}
+
+ /**
+ * Implements hook_permission().
+ */
+function sdm_permission() {
+  $permissions = array();
+  $permissions['administer_sdm_data'] = array(
+    'title' => t('Administer Structured Data Markup')
+  );
+  return $permissions;
+}
+
+// ************************************* ENTITY INFO
+/**
+ * Implements hook_entity_info().
+ */
+function sdm_entity_info() {
+  $entities = array();
+  $entities['sdm_data'] = array(
+    'label' => t('Structured Data Markup'),
+    'entity class' => 'SDMEntity',
+    'controller class' => 'SDMEntityController',
+    'base table' => 'sdm_data',
+    'load hook' => 'sdm_data_load',
+    'fieldable' => TRUE,
+    'module' => 'sdm',
+    'uri callback' => 'entity_class_uri',
+    'label callback' => 'entity_class_label',
+    'access callback' => 'sdm_data_access',
+    'views controller class' => 'EntityDefaultViewsController',
+    'admin ui' => array(
+      'title' => t('Structure Data Markup'),
+      'path' => 'admin/structure/sdm',
+      'file' => 'includes/sdm.admin.inc',
+      'controller class' => 'SDMUIController',
+      'menu wildcard' => '%sdm_data',
+    ),
+    'entity keys' => array(
+      'id' => 'sdm_data_id',
+      'bundle' => 'sdm_data_type',
+    ),
+    'bundle keys' => array(
+      'bundle' => 'sdm_data_type'
+    ),
+    'bundles' => array()
+  );
+  $entities['sdm_data_type'] = array(
+    'label' => t('Structured Data Markup Type'),
+    'entity class' => 'SDMEntityType',
+    'controller class' => 'SDMEntityTypeController',
+    'base table' => 'sdm_data_type',
+    'fieldable' => FALSE,
+    'bundle of' => 'sdm_data',
+    'exportable' => TRUE,
+    'module' => 'sdm',
+    'entity keys' => array(
+      'id' => 'sdm_data_type',
+      'label' => 'label',
+    ),
+    'access callback' => 'sdm_data_access',
+    'views controller class' => 'EntityDefaultViewsController',
+    'admin ui' => array(
+      'path' => 'admin/structure/sdm/types',
+      'file' => 'includes/sdm.admin.inc',
+      'controller class' => 'SDMEntityTypeUIController',
+      'menu wildcard' => '%sdm_data_type',
+    ),
+  );
+  return $entities;
+}
+
+/**
+ * Implements hook_entity_info_alter().
+ */
+function sdm_entity_info_alter(&$entity_info) {
+  foreach (sdm_data_types() as $type => $info) {
+    $entity_info['sdm_data']['bundles'][$type] = array(
+      'label' => $info->label,
+      'admin' => array(
+        'path' => 'admin/structure/sdm/types/manage/%sdm_data_type',
+        'real path' => 'admin/structure/sdm/types/manage/' . $type,
+        'bundle argument' => 5,
+      ),
+    );
+  }
+}
+
+/**
+ * Implements hook_entity_property_info().
+ */
+function sdm_entity_property_info() {
+  $return = array();
+  $properties = array();
+  $properties['sdm_data_id'] = array(
+    'label' => t('Structured data markup ID'),
+    'description' => t('The unique id of the sdm_data'),
+    'type' => 'integer',
+    'schema field' => 'sdm_data_type'
+  );
+  $properties['name'] = array(
+    'label' => t('Name'),
+    'type' => 'text',
+    'description' => t('The name for the structured data entry'),
+    'setter callback' => 'entity_property_verbatim_set',
+    'setter permission' => 'administer_sdm_data',
+    'schema field' => 'name',
+  );
+  $properties['description'] = array(
+    'label' => t('Description'),
+    'type' => 'text',
+    'description' => t('The short description of the structured data markup entry, for admin purposes'),
+    'setter callback' => 'entity_property_verbatim_set',
+    'setter permission' => 'administer_sdm_data',
+    'schema field' => 'description',
+  );
+  $properties['context'] = array(
+    'label' => t('@Context'),
+    'type' => 'text',
+    'description' => t('The @context JSON+LD node object for the structured data JSON+LD object, e.g: http://schema.org'),
+    'setter callback' => 'entity_property_verbatim_set',
+    'setter permission' => 'administer_sdm_data',
+    'schema field' => 'context',
+  );
+  $properties['id'] = array(
+    'label' => t('@ID'),
+    'type' => 'text',
+    'description' => t('The @id JSON+LD node object for the structured data'),
+    'setter callback' => 'entity_property_verbatim_set',
+    'setter permission' => 'administer_sdm_data',
+    'schema field' => 'id',
+  );
+  $properties['graph'] = array(
+    'label' => t('@Graph'),
+    'type' => 'text',
+    'description' => t('The @graph JSON+LD node object for the structured data'),
+    'setter callback' => 'entity_property_verbatim_set',
+    'setter permission' => 'administer_sdm_data',
+    'schema field' => 'graph',
+  );
+  $properties['type'] = array(
+    'label' => t('@Type'),
+    'type' => 'text',
+    'description' => t('The @type JSON+LD node object for the structured data'),
+    'setter callback' => 'entity_property_verbatim_set',
+    'setter permission' => 'administer_sdm_data',
+    'schema field' => 'type',
+  );
+  $properties['reverse'] = array(
+    'label' => t('@Reverse'),
+    'type' => 'text',
+    'description' => t('The @reverse JSON+LD node object for the structured data'),
+    'setter callback' => 'entity_property_verbatim_set',
+    'setter permission' => 'administer_sdm_data',
+    'schema field' => 'reverse',
+  );
+  $properties['sdm_data_type'] = array(
+    'label' => t('Type'),
+    'type' => 'text',
+    'description' => t('The type of structured data entry'),
+    'setter callback' => 'entity_property_verbatim_set',
+    'setter permission' => 'administer_sdm_data',
+    'schema field' => 'sdm_data_type',
+  );
+  $properties['data'] = array(
+    'label' => t('Data'),
+    'type' => 'struct',
+    'description' => t('Arbitrary data attached to the sdm entity'),
+    'setter callback' => 'entity_property_verbatim_set',
+    'setter permission' => 'administer_sdm_data',
+    'schema field' => 'data',
+  );
+  $return['sdm_data']['properties'] = $properties;
+
+  // SDM Data Type.
+  $properties['sdm_data_type'] = array(
+    'label' => t('Structured data markup type ID'),
+    'description' => t('The unique id of the sdm_data type'),
+    'type' => 'integer',
+    'schema field' => 'sdm_data_type'
+  );
+  $properties['label'] = array(
+    'label' => t('Label'),
+    'type' => 'text',
+    'description' => t('The label for the structured data entry type'),
+    'setter callback' => 'entity_property_verbatim_set',
+    'setter permission' => 'administer_sdm_data',
+    'schema field' => 'label',
+  );
+  $properties['description'] = array(
+    'label' => t('Description'),
+    'type' => 'text',
+    'description' => t('The short description of the sdm_data'),
+    'setter callback' => 'entity_property_verbatim_set',
+    'setter permission' => 'administer_sdm_data',
+    'schema field' => 'description',
+  );
+  $properties['data'] = array(
+    'label' => t('Data'),
+    'type' => 'struct',
+    'description' => t('Arbitrary data attached to the sdm entity'),
+    'setter callback' => 'entity_property_verbatim_set',
+    'setter permission' => 'administer_sdm_data',
+    'schema field' => 'data',
+  );
+  $return['sdm_data_type']['properties'] = $properties;
+
+  return $return;
+}
+
+/**
+ * Returns a themed table for adding sdm data entities.
+ */
+function sdm_data_type_table() {
+  $types = sdm_data_types();
+  $sdm_data = entity_get_info('sdm_data');
+  foreach ($types as $name=>$info) {
+    $content[$name]['title'] = 'Add Structured Data Markup Type: "' . $info->label . '"';
+    $content[$name]['href'] = $sdm_data['admin ui']['path'] . '/add/' . $name;
+    $content[$name]['description'] = $info->description;
+    $content[$name]['localized_options'] = array();
+  }
+  return theme('sdm_data_type_list', array('content' => $content));
+}
+
+/**
+ * Implements hook_forms().
+ *
+ * All sdm entity forms share the same form handler.
+ */
+function sdm_forms() {
+  $forms = array();
+  if ($types = sdm_data_types()) {
+    foreach (array_keys($types) as $type) {
+      $forms['sdm_data_' . $type . '_form']['callback'] = 'sdm_data_form';
+    }
+  }
+  return $forms;
+}
+
+/**
+ * Form factory for sdm entity type forms.
+ * @param string $type
+ *   sdm entity type machine name
+ * @param stdClass $entity
+ *   The entity to create a form for
+ * @param string $op
+ *   The operation (add, edit, etc). Not used currently.
+ */
+function sdm_forms_wrapper($type, $entity, $op='add') {
+  if (!isset($entity)) {
+    $entity = sdm_default_entity($type);
+  }
+  else {
+    $type = $entity->sdm_data_type;
+  }
+  $form = drupal_get_form('sdm_data_' . $type . '_form', $entity);
+  return $form;
+}
+
+/**
+ * Returns a default sdm entity.
+ * @param string $type
+ *   The sdm entity type to create.
+ * @return SDMEntity $sdm_data
+ *   An instantiated sdm entity, unsaved.
+ */
+function sdm_default_entity($type) {
+  $sdm_data = new SDMEntity();
+  $sdm_data->sdm_data_type = $type;
+  $sdm_data->name = '';
+  $sdm_data->description = '';
+  $sdm_data->is_new = TRUE;
+  $sdm_data->module = 'sdm';
+  $sdm_data->data = array();
+  return $sdm_data;
+}
+
+/**
+ * Access function for the entity.
+ */
+function sdm_data_access() {
+  return user_access('administer_sdm_data');
+}
+
+/**
+* Load an entity.
+*/
+function sdm_data_load($id, $reset = FALSE) {
+  $sdm_entities = sdm_data_load_multiple(array($id), array(), $reset);
+  return reset($sdm_entities);
+}
+
+/**
+* Load multiple entities based on certain conditions.
+*/
+function sdm_data_load_multiple($ids = array(), $conditions = array(), $reset = FALSE) {
+  return entity_load('sdm_data', $ids, $conditions, $reset);
+}
+
+/**
+* Save Structured Data Markup entity.
+*/
+function sdm_data_save($sdm_data) {
+ entity_save('sdm_data', $sdm_data);
+}
+
+/**
+* Delete single Structured Data Markup entity.
+*/
+function sdm_data_delete($sdm_data_id) {
+  entity_delete('sdm_data', entity_id('sdm_data' , $sdm_data_id));
+}
+
+/**
+* Delete multiple Structured Data Markup entities.
+*/
+function sdm_data_delete_multiple($sdm_enitity_ids) {
+  entity_delete_multiple('sdm_data', $sdm_enitity_ids);
+}
+
+
+/**
+ * List of Structured Data Markup Entity Types.
+ */
+function sdm_data_types($owner_name = NULL) {
+  $sdm_data_types = entity_load('sdm_data_type', isset($owner_name) ? array($owner_name) : FALSE, array(), TRUE);
+  return isset($owner_name) ? reset($sdm_data_types) : $sdm_data_types;
+}
+
+/**
+ * Load Structured Data Markup Entity Type.
+ */
+function sdm_data_type_load($sdm_data_type) {
+  return sdm_data_types($sdm_data_type);
+}
+
+/**
+ * Save Structured Data Markup Entity type entity.
+ */
+function sdm_data_type_save($sdm_data_type) {
+  entity_save('sdm_data_type', $sdm_data_type);
+}
+
+/**
+ * Delete single Structured Data Markup Entity type.
+ */
+function sdm_data_type_delete($sdm_data_type) {
+  entity_delete('sdm_data_type', entity_id('sdm_data_type' ,$sdm_data_type));
+}
+
+/**
+ * Delete multiple Structured Data Markup Entity types.
+ */
+function sdm_data_type_delete_multiple($sdm_data_type_ids) {
+  entity_delete_multiple('sdm_data_type', $sdm_data_type_ids);
+}
+
+/**
+ * Filter function for field options array.
+ * @param $key
+ * @return bool
+ */
+function sdm_only_text($value) {
+  return (($value == 'Text') || ($value == 'Long text'));
+}
+
+/**
+ * Filter function for existing field options array.
+ * @param $key
+ * @return bool
+ */
+function sdm_only_text_existing($value) {
+  return ((strpos($value, 'Text') === 0) || (strpos($value, 'Long text') === 0));
+}
+
+function sdm_form_field_ui_field_overview_form_alter(&$form, $form_id) {
+  if ($form['#entity_type'] == 'sdm_data') {
+    $form['fields']['_add_new_field']['type']['#options'] = array_filter($form['fields']['_add_new_field']['type']['#options'], 'sdm_only_text');
+    $form['fields']['_add_existing_field']['field_name']['#options'] = array_filter($form['fields']['_add_existing_field']['field_name']['#options'], 'sdm_only_text_existing');
+  }
+}
+/**
+ * Implements hook_context_plugins().
+ */
+function sdm_context_plugins() {
+  $plugins = array();
+  $plugins['sdm_context_reaction_insert_markup'] = array(
+    'handler' => array(
+      'path' => drupal_get_path('module', 'sdm') .'/plugins',
+      'file' => 'sdm_context_reaction_insert_markup.inc',
+      'class' => 'sdm_context_reaction_insert_markup',
+      'parent' => 'context_reaction',
+    ),
+  );
+  return $plugins;
+}
+
+/**
+ * Implement hook_context_registry().
+ */
+function sdm_context_registry() {
+  return array(
+    'reactions' => array(
+      'sdm_markup' => array(
+        'title' => t('Add an SDM markup code.'),
+        'plugin' => 'sdm_context_reaction_insert_markup',
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_theme().
+ */
+function sdm_theme() {
+  $themes = array();
+  $themes['sdm_data_type_list'] = array(
+    'variables' => array(),
+    'file' => 'theme/sdm_theme.inc'
+  );
+  return $themes;
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function sdm_views_api($module = NULL, $api = NULL) {
+  return array('api' => 3);
+}

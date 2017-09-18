@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Google Social Profile SDM feature.
+ */
+
+include_once 'google_social_profile_sdm.features.inc';

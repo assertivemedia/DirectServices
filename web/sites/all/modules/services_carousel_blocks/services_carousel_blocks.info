@@ -1,0 +1,10 @@
+name = Services Carousel Blocks
+description = Display the dynamic custom blocks
+core = 7.x
+
+stylesheets[all][] = css/owl.carousel.min.css
+stylesheets[all][] = css/owl.theme.default.css
+stylesheets[all][] = css/lightbox.min.css
+
+scripts[] = js/owl.carousel.min.js
+scripts[] = js/lightbox.min.js
