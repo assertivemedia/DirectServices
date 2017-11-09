@@ -1,0 +1,559 @@
+<?php
+/**
+ * Implements hook_block_info().
+ */
+function oxford_mots_menu(){
+	$items['find_address'] = array(
+		  'title' => 'My title',
+		  'page callback' => 'find_address_callback',
+		  //'page arguments' => array(1),
+		  'access arguments' => array('access content'),
+		  'type' => MENU_CALLBACK,
+	 ); 
+	
+	 return $items; 
+} 
+function find_address_callback(){
+	//print_r($_POST);
+	$postcode = str_replace(" ",'',trim($_POST['pcode']));
+	//echo $postcode; exit;
+	
+	//$ApiKey = "a624550c-75f1-44e3-90ac-cc7482d2ee7d";
+	$ApiKey = "44F1ECA8-4DAB-46CB-A03C-D3B3C0E1D84E";
+	$response = get_address_detail($ApiKey,$postcode);
+	
+	if($response['Response']['StatusCode'] == 'Success')
+	{
+		$addresses = $response['Response']['DataItems']['AddressDetails']['AddressList'];
+		foreach($addresses as $adderess)
+		{
+			echo '<option value="'.$adderess['SummaryAddress'].'">'.$adderess['SummaryAddress'].'</option>';
+		} 
+	} else {
+		echo '<option value="" selected="selected">Select</option>';
+	}
+}
+function oxford_mots_block_info() {
+  $blocks['oxford_vehicle_reg'] = array(
+    'info' => t('Oxford Vehicle Reg'),
+    'title' => NULL,
+  );
+  $blocks['oxford_vehicle_reg_manual'] = array(
+    'info' => t('Oxford Vehicle Reg manual'),
+    'title' => NULL,
+  );
+  $blocks['oxford_registration_search'] = array(
+    'info' => t('Oxford Search By Registration'),
+    'title' => NULL,
+  );
+  $blocks['oxford_model_search'] = array(
+    'info' => t('Oxford Search By Model'),
+    'title' => NULL,
+  );
+  return $blocks; 
+}
+/**
+ * Implements hook_block_view().
+*/
+function oxford_mots_block_view($delta = '') {
+  if ($delta == 'oxford_vehicle_reg') {    
+    $block['content'] = oxford_vehicle_reg_content();
+  }
+  if ($delta == 'oxford_registration_search') {    
+    $block['content'] = oxford_search_by_registration();
+  }
+  if ($delta == 'oxford_vehicle_reg_manual') {    
+    $block['content'] = oxford_vehicle_reg_manual_content();
+  }
+  return $block;
+}
+
+/* Block Content*/ 
+function oxford_vehicle_reg_manual_content()
+{
+	return drupal_get_form('oxford_vehicle_reg_manual_form');
+}
+function oxford_vehicle_reg_content()
+{
+	return drupal_get_form('oxford_vehicle_reg_form');
+}
+function oxford_search_by_registration()
+{
+	return drupal_get_form('oxford_search_by_registration_form');
+}
+
+function oxford_vehicle_reg_manual_form()
+{
+	if(isset($_GET['mot_type']))
+	{
+		$mot_type = $_GET['mot_type'];	
+	} else {
+		$mot_type = "Book MOT";
+	}
+	$form['mot_type'] = array(
+		'#type' => 'hidden',				
+		'#default_value' => $mot_type,		
+	);
+	$form['submit'] = array(
+		'#type' => 'submit',
+		'#attributes' => array('class' => array('mots-manual-link')), 	
+		'#value' => t('Or click here to enter your vehicle details'),
+		'#ajax' => array(
+				'callback' => 'oxford_vehicle_reg_manual_form_submit',
+				'wrapper' => 'vehicle-data',
+				'method' => 'html',
+				'effect' => 'fade',
+		),
+	);
+	return $form;
+}
+function oxford_vehicle_reg_manual_form_submit($form, &$form_state){
+	
+	$html = "<h3>Your Vehicle Details</h3>";	
+	$form = drupal_get_form('oxford_search_by_registration_form');	
+	$html .= drupal_render($form);
+	return $html;
+}
+/* Generate vehical Registartion Form */
+function oxford_vehicle_reg_form()
+{
+	if(isset($_GET['mot_type']))
+	{
+		$mot_type = $_GET['mot_type'];	
+	} else {
+		$mot_type = "Book MOT";
+	}
+	
+	$form['registration'] = array(
+		'#type' => 'textfield',
+		'#attributes' => array('placeholder' => t('YOUR REG')),
+		'#required' => TRUE,   
+	);	
+	$form['mot_type'] = array(
+		'#type' => 'hidden',		
+		'#default_value' => $mot_type,		
+	);
+	$form['submit'] = array(
+		'#type' => 'submit',
+		'#value' => t('SEARCH'),
+		'#ajax' => array(
+				'callback' => 'oxford_vehicle_reg_form_submit',
+				'wrapper' => 'vehicle-data',
+				'method' => 'html',
+				'effect' => 'fade',
+		),
+	);
+	
+	return $form;
+}
+function oxford_vehicle_reg_form_submit($form, &$form_state){
+	$html = "";	
+	if($form_state['values']['registration'] != '')
+	{
+		//$ApiKey = "a624550c-75f1-44e3-90ac-cc7482d2ee7d";
+		$ApiKey = "44F1ECA8-4DAB-46CB-A03C-D3B3C0E1D84E";
+		$response = get_car_detail($ApiKey,$form_state['values']['registration']);
+		//print_r($response);exit;
+		
+		if($response['Response']['StatusCode'] == 'Success')
+		{
+			$vrm = $response['Response']['DataItems']['VehicleRegistration']['Vrm'];	
+			$make = $response['Response']['DataItems']['VehicleRegistration']['Make'];	
+			$model = $response['Response']['DataItems']['VehicleRegistration']['Model'];	
+			$year = $response['Response']['DataItems']['VehicleRegistration']['YearOfManufacture'];	
+			$engine = $response['Response']['DataItems']['VehicleRegistration']['EngineCapacity'];
+			
+			$url = drupal_get_path_alias('node/95');
+			$param = '&reg='.$vrm;
+			
+			$html .= "<h3>Your Vehicle Details</h3>";
+			$html .= "<div style='font-size:22px;font-weight:bold;'>".$vrm."</div>";	
+			$html .= "<div><strong>Make  : ".$make."</strong></div>";	
+			$html .= "<div><strong>Model : ".$model."</strong></div>";	
+			$html .= "<div><strong>Engine: ".$engine."cc</strong></div>";
+			$html .= "<br/>";	
+			//$html .= "<p><a class='green-btn btn' href='/".$url."?reg=".$vrm."'>Continue</a></p>";
+			
+				
+		} else { 
+			$html .= "<h3>Your Vehicle Details</h3>";
+			$html .= "<span class='error' style='font-size:18px;'>No Vehicle data found Or Please add details manually in below form.</span>";
+			$param = "";
+		}		
+		
+	} else {
+		$html .= "<h3>Your Vehicle Details</h3>";
+		$html .= "<span class='error' style='font-size:18px;'>Please enter Reg No. or Please add details manually in below form.</span>";
+		
+	}
+	$form = drupal_get_form('oxford_search_by_registration_form');
+	$html .= drupal_render($form);
+	return $html;
+}
+/*function oxford_vehicle_reg_form_validate($form, &$form_state)
+{
+	if($form_state['value']['registration'] == "")
+	{
+		form_set_error("registration", "Please Enter valid Reg No");
+	}
+}*/
+/*function oxford_vehicle_reg_form_submit($form, &$form_state)
+{
+	//print_r($form_state);exit;
+	$regNo = $form_state['values']['registration'];
+	$url = drupal_get_path_alias('node/95');
+	$form_state['redirect'] = array( $url,
+	  array(
+		'query' => array(
+		  'reg' => $regNo,
+		),
+	  ),
+	);
+}*/
+/* Generate Search by Registartion Form */
+function oxford_search_by_registration_form()
+{
+	$make = ''; 	
+	$model = ''; 	
+	$year = ''; 	
+	$engine = ''; 
+	$mot_type = $_POST['mot_type'];	
+	if(isset($_POST['registration']) && $_POST['registration'] != '')
+	{		
+		//$ApiKey = "a624550c-75f1-44e3-90ac-cc7482d2ee7d";
+		$ApiKey = "44F1ECA8-4DAB-46CB-A03C-D3B3C0E1D84E";
+		$response = get_car_detail($ApiKey,$_POST['registration']);
+		
+		if($response['Response']['StatusCode'] == 'Success')
+		{
+			
+			$vrm = $response['Response']['DataItems']['VehicleRegistration']['Vrm'];
+			$make = $response['Response']['DataItems']['VehicleRegistration']['Make'];	
+			$model = $response['Response']['DataItems']['VehicleRegistration']['Model'];	
+			$year = $response['Response']['DataItems']['VehicleRegistration']['YearOfManufacture'];	
+			$engine = $response['Response']['DataItems']['VehicleRegistration']['EngineCapacity'];	
+			
+			$form['detail'] = array(
+				'#type' => 'markup',		
+				'#markup' => $html,
+				'#prefix'=>'<div id="form-message"></div><div class="car-detail">',
+			);
+		
+			$form['vrm'] = array(
+				'#type' => 'hidden',		
+				'#default_value' => $vrm,		
+			);
+			$form['make'] = array(
+				'#type' => 'hidden',		
+				'#default_value' => $make,		
+			);
+			$form['model'] = array(
+				'#type' => 'hidden',		
+				'#default_value' => $model,
+				
+			);
+			$form['year'] = array(
+				'#type' => 'hidden',		
+				'#default_value' => $year,
+				
+			);	
+			$form['engine'] = array(
+				'#type' => 'hidden',		
+				'#default_value' => $engine,
+				'#suffix'=> '</div>',
+			);
+		} else {
+			$form['vrm'] = array(
+				'#type' => 'textfield',
+				'#title' => t('Reg No:'),			
+				'#default_value' => '',	
+				'#required' => TRUE, 
+				'#prefix'=>'<div id="form-message"></div><div class="car-detail">',	
+			);
+			$form['make'] = array(
+				'#type' => 'textfield',	
+				'#title' => t('Make:'),	
+				'#default_value' => '',	
+				'#required' => TRUE, 	
+			);
+			$form['model'] = array(
+				'#type' => 'textfield',	
+				'#title' => t('Model:'),	
+				'#default_value' => '',
+				'#required' => TRUE, 
+				'#suffix'=> '</div>',			
+			);
+		}	 
+		
+	} else {
+		$form['vrm'] = array(
+			'#type' => 'textfield',
+			'#title' => t('Reg No:'),			
+			'#default_value' => '',	
+			'#required' => TRUE, 
+			'#prefix'=>'<div id="form-message"></div><div class="car-detail">',	
+		);
+		$form['make'] = array(
+			'#type' => 'textfield',	
+			'#title' => t('Make:'),	
+			'#default_value' => '',	
+			'#required' => TRUE, 	
+		);
+		$form['model'] = array(
+			'#type' => 'textfield',	
+			'#title' => t('Model:'),	
+			'#default_value' => '',
+			'#required' => TRUE, 
+			'#suffix'=> '</div>',			
+		);		
+	}
+	/*$form['title'] = array(
+	   '#type' => 'select',
+       '#title' => t('Title:'),
+	   '#prefix'=>"<div class='personal-detail'><h3>Enter Your Details</h3><div class='info-txt'>Please enter your details below and click 'Continue.'</div>",
+       '#options' => array('Mr'=>'Mr','Mrs'=>'Mrs'),
+       '#default_value' => '',  
+	);*/
+	$form['forename'] = array(
+	   '#type' => 'textfield',
+       '#title' => t('Forename:'),	 
+	   '#prefix'=>"<div class='personal-detail'><h3>Enter Your Details</h3><div class='info-txt'>Please enter your details below and click 'Continue.'</div>",         
+       '#default_value' => '',
+	   '#required' => TRUE,  
+	);
+	$form['surname'] = array(
+	   '#type' => 'textfield',
+       '#title' => t('Surname:'),	          
+       '#default_value' => '',  
+	   '#required' => TRUE,  
+	);
+	$form['telephone'] = array(
+	   '#type' => 'textfield',
+       '#title' => t('Telephone:'),	          
+       '#default_value' => '', 
+	   '#required' => TRUE,   
+	);
+	$form['email'] = array(
+	   '#type' => 'textfield',
+       '#title' => t('Email:'),	          
+       '#default_value' => '',  
+	   '#required' => TRUE,  
+	);
+	$form['postcode'] = array(
+	   '#type' => 'textfield',
+       '#title' => t('Postcode:'),
+	   '#prefix'=> "<div class='postcode-control'>",
+	   '#suffix'=>'<button id="address_lookup" type="button" class="btn btn-default">Find Address</button></div>',	   		          
+       '#default_value' => '', 
+	   '#attributes' => array('class' => array('postcode-input')), 
+	   '#required' => TRUE,  
+	); 
+	
+	$form['address'] = array(
+	   '#type' => 'select',
+       '#title' => t('Address:'),	   
+	   '#options' => array('' => t('Select')),	
+	   '#attributes' => array('class' => array('address-input')),  	   
+	   '#validated' => TRUE,                
+	   //'#required' => TRUE,    	   
+	);	
+	
+	$form['preferred_date'] = array(
+		'#title' => t('Preferred date:'),
+		'#type' => 'date_popup',
+		'#date_format' => 'd-m-Y',
+		'#date_label_position' => 'none',		
+		//'#suffix'=>'</div>',
+	);	
+	/*$form['vehicle_servicing'] = array(
+	  '#type' =>'checkbox',		  
+	  //'#title'=>t('Add vehicle servicing'),	
+	  //'#title_display'=>'after',
+	  '#prefix'=>'<div class="form-item form-item-vehicle-servicing form-type-checkbox checkbox"><label class="control-label" for="edit-vehicle-servicing">Add vehicle servicing:</label>',
+	  '#suffix'=>'</div></div>',
+	  '#theme_wrappers'=> array(),			    		   		  
+	  '#default_value' => FALSE, // for default checked and false is not checked
+	);	*/
+	$form['vehicle_servicing'] = array(
+		'#type' => 'hidden',				
+		'#default_value' => 'Yes',
+		'#theme_wrappers' => array(),
+		'#attributes' => array ('id' => array('vehicle_servicing')),		 
+		'#prefix'=>'<div class="form-group form-item yn-btn"><label class="control-label">Add vehicle servicing:</label><div class="form-yn-btn"><div class="radioBtn btn-group"><a class="sacks-btn active" data-toggle="vehicle_servicing" data-title="Yes">YES</a><a class="sacks-btn notActive" data-toggle="vehicle_servicing" data-title="No">NO</a></div></div>',	
+		'#suffix' => '</div>'			
+	);
+	/*$form['my_captcha_element'] = array(
+		'#type' => 'captcha',
+		'#captcha_type' => 'recaptcha/reCAPTCHA',
+	);*/
+	$form['mot_type'] = array(
+		'#type' => 'hidden',		
+		'#default_value' => $mot_type,		
+	);
+	$form['submit'] = array(
+		'#type' => 'submit',
+		'#attributes' => array('class'=>array('green-btn')),
+		'#prefix'=> '<div class="continue-btn">',
+		'#suffix'=>'</div>',	
+		'#value' => t('Submit'),
+		'#ajax' => array(
+				'callback' => 'oxford_search_by_registration_form_ajax_handle',
+				'wrapper' => 'vehicle-data', 
+				'method' => 'html',
+				'effect' => 'fade', 
+		),
+	);	
+	return $form;
+}
+function get_car_detail($ApiKey,$regNo)
+{
+	// Init cURL session
+	$curl = curl_init();
+	
+	// Set API Key
+	//$ApiKey = "a624550c-75f1-44e3-90ac-cc7482d2ee7d";
+	
+	// Construct URL String
+	$url = "https://uk1.ukvehicledata.co.uk/api/datapackage/%s?v=2&api_nullitems=1&key_vrm=%s&auth_apikey=%s";
+	$url = sprintf($url, "VehicleData", $regNo, $ApiKey); // Syntax: sprintf($url, "PackageName", "VRM", ApiKey);
+	// Note your package name here. There are 5 standard packagenames. Please see your control panel > weblookup or contact your account manager
+	
+	// Create array of options for the cURL session
+	curl_setopt_array($curl, array(
+	  CURLOPT_URL => $url,
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_MAXREDIRS => 10,
+	  CURLOPT_SSL_VERIFYPEER => false,
+	  CURLOPT_TIMEOUT => 30,
+	  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+	  CURLOPT_CUSTOMREQUEST => "GET"
+	));
+	
+	// Execute cURL session and store the response in $response
+	$response = curl_exec($curl);
+	
+	// If the operation failed, store the error message in $error
+	$error = curl_error($curl);
+	
+	// Close cURL session
+	curl_close($curl);
+	
+	// If there was an error, print it to screen. Otherwise, unserialize response and print to screen.
+	/*if ($error) {
+	  echo "cURL Error: " . $error;
+	} else {
+	  print_r(json_decode($response, true)); // For demonstration purposes - Unserialize response & dump array contents to screen
+	}*/
+	$response = json_decode($response, true);
+	return $response;
+}
+function get_address_detail($ApiKey,$postcode){
+	
+	$curl = curl_init();	
+	$url = "https://uk1.ukvehicledata.co.uk/api/datapackage/%s?v=2&api_nullitems=1&auth_apikey=%s&user_tag=&key_postcode=%s";
+	$url = sprintf($url, "PostcodeLookup", $ApiKey, $postcode); // Syntax: sprintf($url, "PackageName", "VRM", ApiKey);
+	
+	curl_setopt_array($curl, array(
+	  CURLOPT_URL => $url,
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_MAXREDIRS => 10,
+	  CURLOPT_SSL_VERIFYPEER => false,
+	  CURLOPT_TIMEOUT => 30,
+	  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+	  CURLOPT_CUSTOMREQUEST => "GET"
+	));
+	
+	// Execute cURL session and store the response in $response
+	$response = curl_exec($curl);
+	
+	// If the operation failed, store the error message in $error
+	$error = curl_error($curl);
+	
+	// Close cURL session
+	curl_close($curl);	
+	
+	$response = json_decode($response, true);
+	return $response;
+}
+function oxford_search_by_registration_form_ajax_handle(&$form, &$form_state){
+	$form_state['rebuild'] = TRUE;
+	return $form;
+}
+function oxford_search_by_registration_form_validate($form, &$form_state) {
+  // YOUR CUSTOM VALIDATION CODE GOES HERE
+  	//print_r($form_state);
+ 	if (!valid_email_address($form_state['values']['email'])) {
+   		form_set_error('email', t('Please enter valid email address.'));
+   	}
+}
+function oxford_search_by_registration_form_submit($form, &$form_state){
+	//echo $preferred_date = date('d-m-Y',strtotime($form_state['values']['preferred_date']));
+	//exit;
+    if($form_state['values']['vrm'] != "")
+	{		
+		if($form_state['values']['preferred_date'] != '')
+		{
+			$preferred_date = date('d-m-Y',strtotime($form_state['values']['preferred_date']));
+		} else { 
+			$preferred_date = $form_state['values']['preferred_date'];
+		}
+		 
+		$html = "<h1>".$form_state['values']['mot_type']."</h1>";
+		$html .= "<h1>Vehicle Details</h1>
+				<div style='font-size:22px;font-weight:bold;'>KM14AKK</div>
+				<p>Make   : ".$form_state['values']['make']."</p>
+				<p>Model  : ".$form_state['values']['model']."</p>
+				<p>Engine : ".$form_state['values']['engine']."CC</p>
+				<h1>Personal Details</h1>	
+				<p>Name   : ".$form_state['values']['forename']." ".$form_state['values']['surname']."</p>
+				<p>Telephone : ".$form_state['values']['telephone']."</p>
+				<p>Email : ".$form_state['values']['email']."</p>
+				<p>Address : ".$form_state['values']['address']."</p>
+				<p>Preferred date : ".$preferred_date."</p>
+				<p>Add vehicle servicing : ".$form_state['values']['vehicle_servicing']."</p>	
+				";
+		//$mailto =  'dev.assertivemedia@gmail.com';
+		$mailto =  'directservices@oxford.gov.uk,businessdevelopment@oxford.gov.uk';  
+		$mailfrom ='no-reply@oxforddirectservices.co.uk';
+		$params['subject'] = "Booking Mots";
+		$params['body'] = $html;
+		
+		//$mail_text = drupal_mail('oxford_mots', 'book_mots', $mailto, language_default(),$params,$mailfrom,TRUE);
+		
+		//print_r($mail_text);
+		//echo $html;
+		//exit; 
+		if (drupal_mail('oxford_mots', 'book_mots', $mailto, language_default(),$params,$mailfrom,TRUE)) 							 		{
+			drupal_set_message(t('Your Booking done successfully!!!'));
+			//$form_state['redirect'] = '/thank-you';
+			//$form_state['rebuild'] = TRUE;
+			$form_state['input'] = array();
+  			$form_state['rebuild'] = TRUE;
+		}
+		else {
+			drupal_set_message(t('<font color="red">Some Error in Booking.</font>'));
+		}
+	} else {
+		drupal_set_message(t('<font color="red">Some Error with vehicle details.</font>'));
+	}
+}
+function oxford_mots_mail($key,&$message,$params) {
+    $language = $message['language'];
+	$headers = array(
+		'MIME-Version' => '1.0',
+		'Content-Type' => 'text/html; charset=UTF-8; format=flowed',
+		'Content-Transfer-Encoding' => '8Bit',
+		//'X-Mailer' => 'Drupal'
+	  );
+	 
+    switch ($key) {
+        case 'book_mots': 			
+			 foreach ($headers as $key => $value) {
+				$message['headers'][$key] = $value;
+			  }          
+			$message['subject']= t($params['subject']);               
+			$message['body'][] = $params['body'];         
+        break;
+    }
+} 
+?>

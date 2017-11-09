@@ -43,6 +43,10 @@ function services_carousel_blocks_block_info() {
 	'cache' => DRUPAL_NO_CACHE
 	
   );
+  $blocks['waste_enquiry_form'] = array(
+    'info' => t('Commercial recycling waste enquiry form'),
+    'title' => NULL,	
+  );
   /*$blocks['other_services1'] = array(
     'info' => t('Other Services1'),
     'title' => NULL,
@@ -102,9 +106,584 @@ function services_carousel_blocks_block_view($delta = '') {
     $block['subject'] = t('Gallery');
     $block['content'] = services_carousel_blocks_pest_carousel();
   }
+   if($delta == 'waste_enquiry_form') {
+	$block['subject'] = t('');
+    $block['content'] = commercial_waste_enquiry_form_content();
+  }
   return $block;
 }
+function commercial_waste_enquiry_form_content() {
+	return drupal_get_form('commercial_waste_enquiry_form');
+}
+function commercial_waste_enquiry_form(){
+	$markup_text1 = "If you are unsure of what size bin or waste type you may require, please just fill in your contact details and one of our customer service officers will give you a call back to arrange site visit.";
+	
+	$markup_text2 = "If you have no space or are restricted for containers, please select sacks as below.";
+	
+	$frequency_option = array(
+			'' => 'None',
+			'Daily' => 'Daily',
+			'Weekly' => 'Weekly',
+			'Fortnightly' => 'Fortnightly',  	  	
+			'Monthly ' => 'Monthly ',  	  	  
+	);
+	
+	$form['name'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Customer Name:'),		
+		'#default_value' => '',	
+		'#required' => TRUE, 
+		'#prefix'=>'<div id="form-message"></div><div class="customer-detail">',				
+	);
+	$form['telephone'] = array(
+	   '#type' => 'textfield',
+       '#title' => t('Phone Number:'),		   
+       '#default_value' => '', 
+	   '#required' => TRUE,   
+	);
+	$form['email'] = array(
+	   '#type' => 'textfield',
+       '#title' => t('Email Address:'),		   
+       '#default_value' => '',  
+	   '#required' => TRUE,  
+	);
+	$form['business'] = array(
+	   '#type' => 'textfield',
+       '#title' => t('Business Name:'),	 	   
+	   '#resizable' => FALSE,               
+	   '#required' => TRUE,
+	   //'#suffix'=>'</div>',  
+	);
+	
+	$form['address'] = array(
+	   '#type' => 'select',
+       '#title' => t('Address:'),	   
+	   '#options' => array('' => t('Select')),	
+	   '#attributes' => array('class' => array('address-input')),  	   
+	   '#validated' => TRUE, 
+	   //'#suffix'=>'</div>',                
+	   //'#required' => TRUE,    	   
+	);
+	
+	$form['postcode'] = array(
+	   '#type' => 'textfield',
+       '#title' => t('Postcode:'),
+	   '#prefix'=> "<div class='postcode-control'>",
+	   '#suffix'=>'<button id="address_lookup" type="button" class="btn btn-default">Find Address</button></div></div>',	   		          
+       '#default_value' => '', 
+	   '#attributes' => array('class' => array('postcode-input')), 
+	   '#required' => TRUE,  
+	); 	
+		
+	$form['markup_text1'] = array(
+	   '#type' => 'markup',
+       '#markup' => $markup_text1, 
+	   '#prefix'=>'<div class="markup-text1">',
+	   '#suffix'=>'</div>',
+	);
+	$form['mixed_recycling'] = array(
+	   '#type' => 'markup',
+       '#markup' => 'Mixed Recycling:', 
+	   '#prefix'=>'<div class="markup-text">',
+	   '#suffix'=>'</div>',
+	);
+	$form['mixed_1100'] = array(
+	   '#type' => 'checkbox',
+       '#title' => t(''),
+	   '#default_value' => array(),
+	   '#theme_wrappers' => array(),
+	   '#attributes'=> array('class'=>array('hidden')),
+	   '#prefix'=>'<div class="row"><div class="col-md-3"><label class="checkbox-image"><img src="/sites/all/themes/oxford/images/bin-img/1100L General Waste Bin.jpg" alt="..." class="img-thumbnail img-check" /><span class="bin-title">1100 Litre</span>',  
+	   '#suffix'=>'</label>',  
+	);
+	$form['mixed_1100_no'] = array(
+	   '#type' => 'textfield',             
+       '#default_value' => '', 
+	   '#attributes'=> array('placeholder'=>array('No. of bins'), 'disabled' => 'disabled'),	   
+	   '#suffix'=>'</div>',   
+	);
+	$form['mixed_820'] = array(
+	   '#type' => 'checkbox',
+       '#title' => t(''),
+	   '#default_value' => array(),
+	   '#theme_wrappers' => array(),
+	   '#attributes'=> array('class'=>array('hidden')),
+	   '#prefix'=>'<div class="col-md-3"><label class="checkbox-image"><img src="/sites/all/themes/oxford/images/bin-img/820L General Waste Green_1.jpg" alt="..." class="img-thumbnail img-check" /><span class="bin-title">820 Litre</span>',  
+	   '#suffix'=>'</label>',  
+	);
+	$form['mixed_820_no'] = array(
+	   '#type' => 'textfield',       
+       '#default_value' => '', 
+	   '#attributes'=> array('placeholder'=>array('No. of bins'), 'disabled' => 'disabled'),	   
+	   '#suffix'=>'</div>',   
+	);
+	$form['mixed_360'] = array(
+	   '#type' => 'checkbox',
+       '#title' => t(''),
+	   '#default_value' => array(),
+	   '#theme_wrappers' => array(),
+	   '#attributes'=> array('class'=>array('hidden')),
+	   '#prefix'=>'<div class="col-md-3"><label class="checkbox-image"><img src="/sites/all/themes/oxford/images/bin-img/360L Grey and Black Lid Recycling.jpg" alt="..." class="img-thumbnail img-check" /><span class="bin-title">360 Litre</span>',  
+	   '#suffix'=>'</label>',  
+	);
+	$form['mixed_360_no'] = array(
+	   '#type' => 'textfield',       
+       '#default_value' => '', 
+	   '#attributes'=> array('placeholder'=>array('No. of bins'), 'disabled' => 'disabled'),	   
+	   '#suffix'=>'</div>',   
+	);
+	$form['mixed_240'] = array(
+	   '#type' => 'checkbox',
+       '#title' => t(''),
+	   '#default_value' => array(),
+	   '#theme_wrappers' => array(),
+	   '#attributes'=> array('class'=>array('hidden')),
+	   '#prefix'=>'<div class="col-md-3"><label class="checkbox-image"><img src="/sites/all/themes/oxford/images/bin-img/240L Black Recycling.jpg" alt="..." class="img-thumbnail img-check" /><span class="bin-title">240 Litre</span>',  
+	   '#suffix'=>'</label>',  
+	);
+	$form['mixed_240_no'] = array(
+	   '#type' => 'textfield',       
+       '#default_value' => '', 
+	   '#attributes'=> array('placeholder'=>array('No. of bins'), 'disabled' => 'disabled'),	   
+	   '#suffix'=>'</div></div>',   
+	);
+	$form['general_recycling'] = array(
+	   '#type' => 'markup',
+       '#markup' => 'General Waste:', 
+	   '#prefix'=>'<div class="markup-text">',
+	   '#suffix'=>'</div>',
+	);
+	$form['general_1100'] = array(
+	   '#type' => 'checkbox',
+       '#title' => t(''),
+	   '#default_value' => array(),
+	   '#theme_wrappers' => array(),
+	   '#attributes'=> array('class'=>array('hidden')),
+	   '#prefix'=>'<div class="row"><div class="col-md-3"><label class="checkbox-image"><img src="/sites/all/themes/oxford/images/bin-img/green/1100L-General-Waste-Bin-1.jpg" alt="..." class="img-thumbnail img-check" /><span class="bin-title">1100 Litre</span>',  
+	   '#suffix'=>'</label>',  
+	);
+	$form['general_1100_no'] = array(
+	   '#type' => 'textfield',             
+       '#default_value' => '', 
+	   '#attributes'=> array('placeholder'=>array('No. of bins'), 'disabled' => 'disabled'),	   
+	   '#suffix'=>'</div>',   
+	);
+	$form['general_820'] = array(
+	   '#type' => 'checkbox',
+       '#title' => t(''),
+	   '#default_value' => array(),
+	   '#theme_wrappers' => array(),
+	   '#attributes'=> array('class'=>array('hidden')),
+	   '#prefix'=>'<div class="col-md-3"><label class="checkbox-image"><img src="/sites/all/themes/oxford/images/bin-img/green/820L-General-Waste-Green-1.jpg" alt="..." class="img-thumbnail img-check" /><span class="bin-title">820 Litre</span>',  
+	   '#suffix'=>'</label>',  
+	);
+	$form['general_820_no'] = array(
+	   '#type' => 'textfield',       
+       '#default_value' => '', 
+	   '#attributes'=> array('placeholder'=>array('No. of bins'), 'disabled' => 'disabled'),	   
+	   '#suffix'=>'</div>',   
+	);
+	$form['general_360'] = array(
+	   '#type' => 'checkbox',
+       '#title' => t(''),
+	   '#default_value' => array(),
+	   '#theme_wrappers' => array(),
+	   '#attributes'=> array('class'=>array('hidden')),
+	   '#prefix'=>'<div class="col-md-3"><label class="checkbox-image"><img src="/sites/all/themes/oxford/images/bin-img/green/360L Green General Waste Bin.jpg" alt="..." class="img-thumbnail img-check" /><span class="bin-title">360 Litre</span>',  
+	   '#suffix'=>'</label>',  
+	);
+	$form['general_360_no'] = array(
+	   '#type' => 'textfield',       
+       '#default_value' => '', 
+	   '#attributes'=> array('placeholder'=>array('No. of bins'), 'disabled' => 'disabled'),	   
+	   '#suffix'=>'</div>',   
+	);
+	$form['general_240'] = array(
+	   '#type' => 'checkbox',
+       '#title' => t(''),
+	   '#default_value' => array(),
+	   '#theme_wrappers' => array(),
+	   '#attributes'=> array('class'=>array('hidden')),
+	   '#prefix'=>'<div class="col-md-3"><label class="checkbox-image"><img src="/sites/all/themes/oxford/images/bin-img/green/240L Green General Waste.jpg" alt="..." class="img-thumbnail img-check" /><span class="bin-title">240 Litre</span>',  
+	   '#suffix'=>'</label>',  
+	);
+	$form['general_240_no'] = array(
+	   '#type' => 'textfield',       
+       '#default_value' => '', 
+	   '#attributes'=> array('placeholder'=>array('No. of bins'), 'disabled' => 'disabled'),	   
+	   '#suffix'=>'</div></div>',   
+	);
+	$form['food_recycling'] = array(
+	   '#type' => 'markup',
+       '#markup' => 'Food Waste Recycling:', 
+	   '#prefix'=>'<div class="markup-text">',
+	   '#suffix'=>'</div>',
+	);
+	$form['food_120'] = array(
+	   '#type' => 'checkbox',
+       '#title' => t(''),
+	   '#default_value' => array(),
+	   '#theme_wrappers' => array(),
+	   '#attributes'=> array('class'=>array('hidden')),
+	   '#prefix'=>'<div class="row"><div class="col-md-3"><label class="checkbox-image"><img src="/sites/all/themes/oxford/images/bin-img/240-Red-Food-Bin-small.jpg" alt="..." class="img-thumbnail img-check" /><span class="bin-title">120 Litre</span>',  
+	   '#suffix'=>'</label>',  
+	);
+	$form['food_120_no'] = array(
+	   '#type' => 'textfield',             
+       '#default_value' => '', 
+	   '#attributes'=> array('placeholder'=>array('No. of bins'), 'disabled' => 'disabled'),	   
+	   '#suffix'=>'</div></div>',   
+	);
+	$form['glass_recycling'] = array(
+	   '#type' => 'markup',
+       '#markup' => 'Glass Recycling:', 
+	   '#prefix'=>'<div class="markup-text">',
+	   '#suffix'=>'</div>',
+	);
+	$form['glass_240'] = array(
+	   '#type' => 'checkbox',
+       '#title' => t(''),
+	   '#default_value' => array(),
+	   '#theme_wrappers' => array(),
+	   '#attributes'=> array('class'=>array('hidden')),
+	   '#prefix'=>'<div class="row"><div class="col-md-3"><label class="checkbox-image"><img src="/sites/all/themes/oxford/images/bin-img/240L Black Recycling.jpg" alt="..." class="img-thumbnail img-check" /><span class="bin-title">240 Litre</span>',  
+	   '#suffix'=>'</label>',  
+	);
+	$form['glass_240_no'] = array(
+	   '#type' => 'textfield',       
+       '#default_value' => '', 
+	   '#attributes'=> array('placeholder'=>array('No. of bins'), 'disabled' => 'disabled'),	   
+	   '#suffix'=>'</div></div>',   
+	);
+	$form['markup_text2'] = array(
+	   '#type' => 'markup',
+       '#markup' => $markup_text2, 
+	   '#prefix'=>'<div class="markup-text1">',
+	   '#suffix'=>'</div>',
+	);
+	$form['markup_text3'] = array(
+	   '#type' => 'markup',
+       '#markup' => 'Sacks/Cardboard Labels:', 
+	   '#prefix'=>'<div class="markup-text">',
+	   '#suffix'=>'</div>',
+	);	
+	$form['mixed_sacks'] = array(
+		'#type' => 'hidden',				
+		'#default_value' => array(),
+		'#theme_wrappers' => array(),
+		'#attributes' => array ('id' => array('mixed_sacks')),		 
+		'#prefix'=>'<div class="row"><div class="form-group"><label class="col-sm-8 col-md-8 control-label ">Mixed Recycling Sacks</label><div class="col-sm-4 col-md-4 text-right"><div class="radioBtn btn-group"><a class="sacks-btn active" data-toggle="mixed_sacks" data-title="Y">YES</a><a class="sacks-btn notActive" data-toggle="mixed_sacks" data-title="N">NO</a></div></div></div>',				
+	);
+	$form['cardbord_sacks'] = array(
+		'#type' => 'hidden',				
+		'#default_value' => array(),
+		'#theme_wrappers' => array(),
+		'#attributes' => array ('id' => array('cardbord_sacks')),		 
+		'#prefix'=>'<div class="form-group"><label class="col-sm-8 col-md-8 control-label ">Cardboard Labels</label><div class="col-sm-4 col-md-4 text-right"><div class="radioBtn btn-group"><a class="sacks-btn active" data-toggle="cardbord_sacks" data-title="Y">YES</a><a class="sacks-btn notActive" data-toggle="cardbord_sacks" data-title="N">NO</a></div></div></div>',				
+	);
+	$form['general_sacks'] = array(
+		'#type' => 'hidden',				
+		'#default_value' => array(),
+		'#theme_wrappers' => array(),
+		'#attributes' => array ('id' => array('general_sacks')),		 
+		'#prefix'=>'<div class="form-group"><label class="col-sm-8 col-md-8 control-label ">General Waste Sacks</label><div class="col-sm-4 col-md-4 text-right"><div class="radioBtn btn-group"><a class="sacks-btn active" data-toggle="general_sacks" data-title="Y">YES</a><a class="sacks-btn notActive" data-toggle="general_sacks" data-title="N">NO</a></div></div></div>',				
+	);
+	$form['food_sacks'] = array(
+		'#type' => 'hidden',				
+		'#default_value' => array(),
+		'#theme_wrappers' => array(),
+		'#attributes' => array ('id' => array('food_sacks')),		 
+		'#prefix'=>'<div class="form-group"><label class="col-sm-8 col-md-8 control-label ">Food Waste Recycling Sacks</label><div class="col-sm-4 col-md-4 text-right"><div class="radioBtn btn-group"><a class="sacks-btn active" data-toggle="food_sacks" data-title="Y">YES</a><a class="sacks-btn notActive" data-toggle="food_sacks" data-title="N">NO</a></div></div></div>',		
+		'#suffix'=>'</div>',				
+	);
+	$form['markup_text4'] = array(
+	   '#type' => 'markup',
+       '#markup' => 'Frequency of Collections:', 
+	   '#prefix'=>'<div class="markup-text">',
+	   '#suffix'=>'</div>',
+	);
+	$form['mixed_frequency'] = array(
+		'#type' => 'select',
+		'#title' => t('Mixed Recycling:'),			
+		'#default_value' => '',	
+		'#options' => $frequency_option,	
+		'#attributes'=> array('data-id'=>array('mixed_frequency')),		
+		'#prefix'=>'<div class="collection-detail">',				
+	);
+	$form['mixed_frequency_perweek'] = array(
+	   '#type' => 'textfield',
+       '#title' => '&nbsp;',
+	   '#attributes'=> array('placeholder'=>array('Number of collection per week')),          
+       '#default_value' => '', 	 
+	   '#prefix'=>'<div id="mixed_frequency" class="frequency-number" style="display:none;">',
+	   '#suffix'=>'</div>',	    
+	);
+	$form['general_frequency'] = array(
+	   '#type' => 'select',
+       '#title' => t('Genaral Waste:'),	          
+       '#default_value' => '', 
+	   '#attributes'=> array('data-id'=>array('general_frequency')), 
+	   '#options' => $frequency_option,	   
+	);
+	$form['general_frequency_perweek'] = array(
+	   '#type' => 'textfield',
+       '#title' => '&nbsp;',
+	   '#attributes'=> array('placeholder'=>array('Number of collection per week')),          
+       '#default_value' => '', 	 
+	   '#prefix'=>'<div id="general_frequency" class="frequency-number" style="display:none;">',
+	   '#suffix'=>'</div>',	    
+	);
+	$form['food_frequency'] = array(
+	   '#type' => 'select',
+       '#title' => t('Food Waste Recycling:'),	          
+       '#default_value' => '',
+	   '#attributes'=> array('data-id'=>array('food_frequency')),   
+	   '#options' => $frequency_option,	   
+	);
+	$form['food_frequency_perweek'] = array(
+	   '#type' => 'textfield',
+       '#title' => '&nbsp;',
+	   '#attributes'=> array('placeholder'=>array('Number of collection per week')),          
+       '#default_value' => '', 	 
+	   '#prefix'=>'<div id="food_frequency" class="frequency-number" style="display:none;">',
+	   '#suffix'=>'</div>',	    
+	);
+	$form['glass_frequency'] = array(
+	   '#type' => 'select',
+       '#title' => t('Glass Recycling:'),	          
+       '#default_value' => '',
+	   '#attributes'=> array('data-id'=>array('glass_frequency')),
+	   '#options' => $frequency_option,  	   	   
+	   //'#suffix'=>'</div>',  
+	);
+	$form['glass_frequency_perweek'] = array(
+	   '#type' => 'textfield',
+       '#title' => '&nbsp;',
+	   '#attributes'=> array('placeholder'=>array('Number of collection per week')),          
+       '#default_value' => '', 	 
+	   '#prefix'=>'<div id="glass_frequency" class="frequency-number" style="display:none;">',
+	   '#suffix'=>'</div></div>',	    
+	);
+	$form['other_comment'] = array(
+	   '#type' => 'textarea',
+       '#title' => t('Any Other Comments:'),
+	   '#attributes'=> array('placeholder'=>array('Comment...')),          
+       '#default_value' => '', 	 	   	    
+	);	
+	$form['submit'] = array(
+		'#type' => 'submit',
+		'#attributes' => array('class'=>array('green-btn')),
+		'#prefix'=> '<div class="continue-btn">',
+		'#suffix'=>'</div>',	
+		'#value' => t('Submit'),		
+	);
+	
+		
+	return $form;
+}
+function commercial_waste_enquiry_form_submit($form, &$form_state){
+	
+	if(isset($form_state['values']) && !empty($form_state['values'])){
+		$name = $form_state['values']['name'];
+		$telephone = $form_state['values']['telephone'];
+		$email = $form_state['values']['email'];
+		$business = $form_state['values']['business'];
+		$postcode = $form_state['values']['postcode'];
+		$comment = $form_state['values']['other_comment'];
+		$address = 'No Address Found.';
+		
+		if($form_state['values']['address']){
+			$address = $form_state['values']['address'];
+		}
+		$m_1100 = '0';
+		$m_820 = '0';
+		$m_360 = '0';
+		$m_240 = '0';
+		
+		if($form_state['values']['mixed_1100'] == 1){
+			$m_1100 = $form_state['values']['mixed_1100_no'];
+		}
+		if($form_state['values']['mixed_820'] == 1){
+			$m_820 = $form_state['values']['mixed_820_no'];
+		}
+		if($form_state['values']['mixed_360'] == 1){
+			$m_360 = $form_state['values']['mixed_360_no'];
+		}
+		if($form_state['values']['mixed_240'] == 1){
+			$m_240 = $form_state['values']['mixed_240_no'];
+		}
+		
+		$g_1100 = '0';
+		$g_820 = '0';
+		$g_360 = '0';
+		$g_240 = '0';
+		
+		if($form_state['values']['general_1100'] == 1){
+			$g_1100 = $form_state['values']['general_1100_no'];
+		}
+		if($form_state['values']['general_820'] == 1){
+			$g_820 = $form_state['values']['general_820_no'];
+		}
+		if($form_state['values']['general_360'] == 1){
+			$g_360 = $form_state['values']['general_360_no'];
+		}
+		if($form_state['values']['general_240'] == 1){
+			$g_240 = $form_state['values']['general_240_no'];
+		}
+		
+		$f_120 = '0';
+		
+		if($form_state['values']['food_120'] == 1){
+			$f_120 = $form_state['values']['food_120_no'];
+		}
+		
+		$gl_240 = '0';
+		
+		if($form_state['values']['glass_240'] == 1){
+			$gl_240 = $form_state['values']['glass_240_no'];
+		}
+		
+		$m_sacks = 'Yes';
+		
+		if($form_state['values']['mixed_sacks'] == 'N'){
+			$m_sacks = 'No';
+		}
+		
+		$c_sacks = 'Yes';
+		
+		if($form_state['values']['cardbord_sacks'] == 'N'){
+			$c_sacks = 'No';
+		}
+		
+		$g_sacks = 'Yes';
+		
+		if($form_state['values']['general_sacks'] == 'N'){
+			$g_sacks = 'No';
+		}
+		
+		$f_sacks = 'Yes';
+		
+		if($form_state['values']['food_sacks'] == 'N'){
+			$f_sacks = 'No';
+		}
+		
+		$m_frequency = 'Not Available.';
+		
+		if($form_state['values']['mixed_frequency'] != ''){
+			$m_frequency = $form_state['values']['mixed_frequency'];
+		}
+		
+		$m_frequency_perweek = '';
+		
+		if($form_state['values']['mixed_frequency_perweek'] != ''){
+			$m_frequency_perweek = "( ".$form_state['values']['mixed_frequency_perweek']." per week )";
+		}
+		
+		$g_frequency = 'Not Available.';
+		
+		if($form_state['values']['general_frequency'] != ''){
+			$g_frequency = $form_state['values']['general_frequency'];
+		}
+		
+		$g_frequency_perweek = '';
+		
+		if($form_state['values']['general_frequency_perweek'] != ''){
+			$g_frequency_perweek = "( ".$form_state['values']['general_frequency_perweek']." per week )";
+		}
+		
+		$f_frequency = 'Not Available.';
+		
+		if($form_state['values']['food_frequency'] != ''){
+			$f_frequency = $form_state['values']['food_frequency'];
+		}
+		
+		$f_frequency_perweek = '';
+		
+		if($form_state['values']['food_frequency_perweek'] != ''){
+			$f_frequency_perweek = "( ".$form_state['values']['food_frequency_perweek']." per week )";
+		}
+		
+		$gl_frequency = 'Not Available.';
+		
+		if($form_state['values']['glass_frequency'] != ''){
+			$gl_frequency = $form_state['values']['glass_frequency'];
+		}
+		
+		$gl_frequency_perweek = '';
+		
+		if($form_state['values']['glass_frequency_perweek'] != ''){
+			$gl_frequency_perweek = "( ".$form_state['values']['glass_frequency_perweek']." per week )";
+		}
+		
+		$html1 = "<h1>Commercial recycling waste enquiry</h1>";
+		$html1 .= "<h2>Personal Details</h2>	
+				<p>Name   : ".$name."</p>
+				<p>Telephone : ".$telephone."</p>
+				<p>Email : ".$email."</p>
+				<p>Business Name : ".$business."</p>
+				<p>Address : ".$address."</p>
+				<p>Postcode : ".$postcode."</p>
+				<h2>Number & Type of Containers</h2>
+				<table border='1' cellpadding='0' cellspacing='0'>
+					<thead>
+						<th colspan='2'><td>1100 Litres</td><td>820 Litres</td><td>360 Litres</td><td>240 Litres</td></th>
+					</thead>
+					<tbody>
+						<tr><td colspan='2'><b>Mixed Recycling</b></td><td>".$m_1100."</td><td>".$m_820."</td><td>".$m_360."</td><td>".$m_240."</td></tr>
+						<tr><td colspan='2'><b>General Waste</b></td><td>".$g_1100."</td><td>".$g_820."</td><td>".$g_360."</td><td>".$g_240."</td></tr>
+					</tbody>
+				</table>
+				<br>
+				<table border='1' cellpadding='0' cellspacing='0'>
+					<thead>
+						<th colspan='2'><td>120 Litres</td></th>
+					</thead>
+					<tbody>
+						<tr><td colspan='2'><b>Food Waste Recycling</b></td><td>".$f_120."</td></tr>
+					</tbody>
+				</table>
+				<br>
+				<table border='1' cellpadding='0' cellspacing='0'>
+					<thead>
+						<th colspan='2'><td>240 Litres</td></th>
+					</thead>
+					<tbody>
+						<tr><td colspan='2'><b>Glass Recycling</b></td><td>".$gl_240."</td></tr>
+					</tbody>
+				</table>
+				<h2>Sacks/Cardboard Labels</h2>
+				<p>Mixed Recycling Sacks : ".$m_sacks."</p>
+				<p>Cardboard Labels : ".$c_sacks."</p>
+				<p>General Waste Sacks : ".$g_sacks."</p>
+				<p>Food Waste Recycling Sacks : ".$f_sacks."</p>
+				<h2>Frequency of Collections</h2>
+				<p>Mixed Recycling : ".$m_frequency." ".$m_frequency_perweek."</p>
+				<p>General Waste : ".$g_frequency." ".$g_frequency_perweek."</p>
+				<p>Food Waste Recycling : ".$f_frequency." ".$f_frequency_perweek."</p>
+				<p>Glass Recycling  : ".$gl_frequency." ".$gl_frequency_perweek."</p>
+				<p>Other Comment  : ".$comment."</p>
+				";
+				
+		//echo $html;exit;
+		//$mailto =  'dev.assertivemedia@gmail.com';		
+		$mailto = 'tradewaste@oxford.gov.uk,businessdevelopment@oxford.gov.uk'; 
+		$mailfrom ='no-reply@oxforddirectservices.co.uk';
+		$params['subject'] = "Commercial recycling waste enquiry";
+		$params['body'] = $html1;
+		
+		if (drupal_mail('oxford_mots', 'book_mots', $mailto, language_default(),$params,$mailfrom,TRUE)) 							 		{
+			drupal_set_message(t('Your enquiry send successfully!!!'));
 
+			$form_state['input'] = array();
+  			$form_state['rebuild'] = TRUE;
+		}
+		else {
+			drupal_set_message(t('<font color="red">Some Error in enquiry.</font>'));
+		}
+	}else{
+		drupal_set_message(t('<font color="red">Some Error in enquiry.</font>'));
+	}
+}
 /* Generate our services carousel */
 function services_carousel_blocks_our_services_carousel(){
   		

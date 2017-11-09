@@ -178,6 +178,9 @@ font-size: 15px;
     background-color: #1474c0;
     border: none;
 }
+.navbar-default.navbar-fixed-top {
+    border-bottom: 5px solid #ec7a1a;
+}
 .navbar-collapse{
     padding: 5px 0;
 }
@@ -777,7 +780,15 @@ section#accordian-section {
 .news-listing .learn-more {
     float: right;
     text-align: right;
-    width: 100%;
+    width: auto;
+}
+.news-listing .learn-more a {
+    background: #097582;
+    border: none;
+    padding: 8px 20px;
+    border-bottom: 4px solid #07606a;
+	color: #fff;
+	display: block;
 }
 /* End News Listing page */
 .latest-news .views-row{
@@ -1076,6 +1087,10 @@ div#views-bootstrap-carousel-1 .carousel-caption {
     text-align: left;
     top: 10%;
 }
+.block.block-views .view-page-banner .field-content > img{
+	max-width: 100%;
+	width: 100%;
+}
 #block-views-page-banner-block .view-page-banner{
 	position: relative;
 }
@@ -1189,7 +1204,7 @@ nav.navbar.navbar-default ul li ul.dropdown-menu li li a {
     font-size: 20px;
 	border-right: none;
 	font-weight: normal;
-	padding: 15px;
+	padding: 15px 24px;
 }
 #block-tb-megamenu-main-menu .tb-megamenu .tb-megamenu-submenu .nav > li > a {
     color: #000;
@@ -2182,3 +2197,573 @@ width:55px;
 .service-price{
 	color: #fff;	
 }
+/* Job page design */ 
+#block-block-14 h3.block-title {
+    background: #034695 none repeat scroll 0 0;
+    color: #fff;
+    margin: 0;
+    padding: 8px;
+}
+#block-block-14 .mots-links {
+    background: #f3f5f5 none repeat scroll 0 0;
+    padding: 8px;
+}
+#block-block-14 ul {
+    margin: 0;
+    padding: 0;
+	list-style: none;
+}
+#block-block-14 li {
+    border-bottom: 1px solid #cecece;
+    padding: 8px;
+}
+#block-block-14 li:last-child {
+    border-bottom: medium none;
+}
+#block-block-14 li a {
+    color: #b44c03;
+    text-decoration: none;
+}
+.view-joblisting .job-list {
+    display: inline-block;
+	border-bottom: 1px solid #cecece;
+	padding-bottom: 20px;
+}
+.view-joblisting .job-list ul li{
+	float: left;
+}
+.view-joblisting .job-detail {
+    float: left;
+    width: 100%;
+	margin-bottom: 20px;
+}
+.view-joblisting .job-detail .fa.fa-circle {
+    font-size: 7px;
+    margin-right: 5px;
+    position: relative;
+    top: -2px;
+}
+/* News Category block */
+#block-views-news-category-block h3.block-title {
+    background: #034695 none repeat scroll 0 0;
+    color: #fff;
+    margin: 0;
+    padding: 8px;
+}
+#block-views-news-category-block .view-news-category {
+    background: #f3f5f5 none repeat scroll 0 0;
+    padding: 8px;
+}
+#block-views-news-category-block .views-row {
+    border-bottom: 1px solid #cecece;
+ 	padding: 8px; 
+}
+#block-views-news-category-block .views-row:last-child {
+    border-bottom: medium none;
+}
+#block-views-news-category-block .views-row a {
+    color: #b44c03;
+    text-decoration: none;
+}
+/* End News Category block */
+/* Sticky Header */
+#block-block-15{
+	display: none;
+}
+.navbar-fixed-top #block-block-15{
+	display: block;
+	float: right;
+}
+.navbar-fixed-top .site-header__contact{
+	font-size: 13px;
+	margin-top: 8px;
+}
+.navbar-fixed-top #block-tb-megamenu-main-menu .tb-megamenu .nav > li > a{
+	padding: 15px 12px;
+}
+.navbar-fixed-top #block-tb-megamenu-main-menu{
+	float: left;
+}
+@media screen and (max-width: 1199px) {
+	.navbar-default .nav > li {
+		margin-right: 0px;
+	}
+	#block-tb-megamenu-main-menu .tb-megamenu .nav > li > a{
+		font-size:18px;
+	}
+}
+@media screen and (max-width: 991px) {
+	#block-tb-megamenu-main-menu .tb-megamenu .nav > li > a{
+		font-size:16px;
+		padding:15px 14px;
+	}
+}
+/* End Sticky Header */
+/* waste enquiry form css */
+#commercial-waste-enquiry-form label{
+	font-weight: normal;
+	font-size: 16px;
+}
+#commercial-waste-enquiry-form .form-group{
+	display: inline-block;
+	width: 100%;
+}
+.customer-detail .form-item label.control-label {
+    float: left;
+    width: 25%;	
+}
+.customer-detail .form-item .form-text,
+.customer-detail .form-item .form-select,
+.customer-detail .form-item .form-textarea-wrapper {
+    float: left;
+    width: 75%;
+}
+#commercial-waste-enquiry-form .customer-detail .postcode-control .form-group{
+	display: inline-block;
+	width: 85%;
+}
+#commercial-waste-enquiry-form .customer-detail .postcode-control .form-group label.control-label{
+	float: left;
+    width: 29.5%;	
+}
+#commercial-waste-enquiry-form .customer-detail .postcode-control .form-item .form-text {
+    float: left;
+    width: 70%;
+}
+#commercial-waste-enquiry-form .customer-detail .postcode-control #address_lookup {
+	float: right;
+}
+.collection-detail .form-item label.control-label {
+    float: left;
+    width: 25%;	
+}
+.collection-detail .form-item .form-text,
+.collection-detail .form-item .form-select,
+.collection-detail .form-item .form-textarea-wrapper {
+    float: left;
+    width: 75%;
+}
+.checkbox-image{
+	border-top:1px solid #ddd;
+	border-left:1px solid #ddd;
+	border-right:1px solid #ddd;
+}
+.checkbox-image.check{
+	border-top:1px solid #337ab7;
+	border-left:1px solid #337ab7;
+	border-right:1px solid #337ab7;
+}
+.checkbox-image .img-thumbnail{
+	border: none;
+}
+.bin-title{
+	padding: 5px;
+	display: inline-block;
+	width: 100%;
+	text-align: center;
+	background: #ddd;
+	color: #337ab7;
+}
+.checkbox-image.check .bin-title{
+	background: #337ab7;
+	color: #fff;
+}
+.radioBtn .sacks-btn.notActive {
+    color: #3276b1;
+    background-color: #fff;
+}
+.radioBtn .sacks-btn {
+    padding: 5px 15px;
+    border: 1px solid #3276b1;
+    line-height: normal;
+    display: inline-block;
+    background: #3276b1;
+    color: #fff;
+}
+.radioBtn .sacks-btn.active:hover {
+    text-decoration: none;
+    color: #fff;
+}
+.radioBtn .sacks-btn.notActive:hover {
+    text-decoration: none;
+    color: #3276b1;
+}
+.markup-text1,
+.markup-text{
+	display: inline-block;
+	width: 100%;
+	margin: 10px 0;
+}
+.markup-text{
+	font-size: 16px;
+	font-weight: bold;
+}
+.frequency-number .form-group{
+	margin-bottom: 15px;
+}
+.form-item.form-item-other-comment label{
+	float: left;
+	width: 25%;
+}
+.form-item.form-item-other-comment .form-textarea-wrapper{
+	float: left;
+	width: 75%;
+}
+/* MOTs Design */
+#block-block-16 h3.block-title {
+    background: #034695 none repeat scroll 0 0;
+    color: #fff;
+    margin: 0;
+    padding: 8px;
+}
+#block-block-16 .mots-links {
+    background: #f3f5f5 none repeat scroll 0 0;
+    padding: 8px;
+}
+#block-block-16 ul {
+    margin: 0;
+    padding: 0;
+	list-style: none;
+}
+#block-block-16 li {
+    border-bottom: 1px solid #cecece;
+    padding: 8px;
+}
+#block-block-16 li:last-child {
+    border-bottom: medium none;
+}
+#block-block-16 li a {
+    color: #b44c03;
+    text-decoration: none;
+}
+.mots-blue-box-com {
+    margin-top: 25px; 
+}
+.mots-blue-box {
+    background: #034695 none repeat scroll 0 0;
+    color: #fff;
+    padding: 1px 0 0;
+}
+.mots-green-box {
+    background: #015545 none repeat scroll 0 0;
+    color: #fff;
+    padding: 1px 0 0;
+}
+.mots-box-text {
+    padding: 0 15px;
+	min-height: 195px; 
+}
+.mots-box-com{
+	min-height: auto;
+}
+.mots-box-com .mots-box-inner-text2 {
+    font-size: 20px; 
+	margin: 12px 0;
+}
+.mots-box-stripe {
+    background: #ec7a1a none repeat scroll 0 0;
+    display: table;
+    padding: 10px;
+    width: 100%;
+}
+.mots-box-stripe > a {
+    color: #fff;
+    display: table-cell;
+    font-size: 22px;
+    padding-left: 10px;
+    text-decoration: none;
+    vertical-align: middle;
+	background: url("../images/arrow.png") no-repeat scroll right center;
+}
+.mots-box-stripe-com > a {
+	text-align: center;
+}
+.mots-box-stripe-com .mot-box-link-text{
+	padding-left: 0;
+}
+.mots-booking-row{
+	padding-top: 30px;  
+}
+.mot-box-link-text {
+    display: inline-block;
+    padding-left: 5px;
+    position: relative;
+    top: 3px;
+}
+.mots-box-text > h2 {
+    font-size: 36px;
+    font-weight: bold;
+	font-family: helvetica;
+}
+.mot_class4 { 
+    font-size: 20px;
+    margin-left: 20px;
+}
+.mots-box-inner-text1 {
+    font-family: helvetica;
+    font-size: 26px;
+}
+.mots-price {
+    font-weight: bold;
+}
+.mots-box-inner-text2 {
+    font-size: 26px;
+    font-weight: bold;
+	margin: 20px 0;
+	font-family: helvetica;
+}
+.mots-small-text {
+    font-size: 16px;
+    font-weight: normal;
+}
+.inner-mt30{
+	margin-top: 20px;
+	margin-bottom: 20px;	
+}
+.inner-mb30{
+	margin-top: 0;
+	margin-bottom: 51px;	
+}
+.vertical-align {
+    display: flex;
+    flex-direction: row;
+}
+.vertical-align > [class^="col-"], .vertical-align > [class*=" col-"] {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+.mots-or-text-div{
+	height: 265px;	
+}
+.mots-or-text {
+    border-bottom: 1px solid;
+    color: #015545;
+    font-size: 26px;
+}
+#mots-banner-section{
+	background: url("../images/mots-banner.jpg");
+	margin-bottom: 30px;
+    min-height: 278px;
+}
+#block-block-17 h2 {
+    color: #fff;
+    font-size: 42px;
+    font-weight: bold;
+    line-height: 54px;
+	margin: 30px 0;
+}.mots-manual-link {
+    border: medium none;
+    color: #b44c03;
+    font-weight: bold;
+    padding: 0;
+    text-decoration: underline;
+	cursor: pointer; 
+}
+.mots-manual-link:hover {
+	color: #b44c03;
+	text-decoration: underline;
+	background: none;
+}
+#block-block-19 h3.block-title {
+    background: #034695 none repeat scroll 0 0;
+    color: #fff;
+    margin: 0;
+    padding: 8px;
+}
+#block-block-19 .mots-links {
+    background: #f3f5f5 none repeat scroll 0 0;
+    padding: 8px;
+}
+#block-block-19 ul {
+    margin: 0;
+    padding: 0;
+	list-style: none;
+}
+#block-block-19 li {
+    border-bottom: 1px solid #cecece;
+    padding: 8px;
+}
+#block-block-19 li:last-child {
+    border-bottom: medium none;
+}
+#block-block-19 li a {
+    color: #b44c03;
+    text-decoration: none;
+}
+/* End Mot design */
+/* Mots Vehicle reg form */
+#oxford-vehicle-reg-form {
+    display: inline-block;
+    width: 100%;
+}
+#oxford-vehicle-reg-form #edit-registration {
+    float: left;
+    margin-right: 10px;
+    width: 50%;
+}
+#oxford-vehicle-reg-form .form-item-registration{
+	float: left;
+	width: 50%;
+	margin-right: 10px;
+}
+#oxford-vehicle-reg-form #edit-registration {
+    background: #fbc00e none repeat scroll 0 0;
+    border: medium none;
+    border-radius: 0;    
+    font-size: 19px;
+    height: 49px;   
+    padding: 12px;   
+	width: 100%; 
+	color: #fff;
+}
+#oxford-vehicle-reg-form .form-control::-moz-placeholder{
+	color: #fff;
+}
+#oxford-vehicle-reg-form .form-control::-webkit-input-placeholder{
+	color: #fff;
+}
+#oxford-vehicle-reg-form .form-control::-ms-input-placeholder{
+	color: #fff;
+}
+#oxford-vehicle-reg-form #edit-submit {
+    border-radius: 0;
+    font-size: 19px;
+    padding: 11px 25px;
+	border: none;
+	background: #034695;
+}
+
+/* END Mots Vehicle reg form */
+/* Mots Search By Registration */
+.car-detail{
+	width: 100%;
+	float: left;	
+}
+.car-detail .form-item,
+.car-detail .form-submit{
+	float: left;
+	width: 31%;
+	margin: 0 1%;
+}
+.car-detail .form-item select.form-control {
+    background: #f3f5f5 none repeat scroll 0 0;
+    border: medium none;
+    border-radius: 0;
+    box-shadow: none;
+    height: auto;
+    padding: 20px 12px;
+}
+.car-detail #edit-go{
+	background: #372a31 none repeat scroll 0 0;
+    border: medium none;
+    border-radius: 0;
+    color: #fff;
+    font-size: 20px;
+    margin-top: 24px;
+    padding: 15px 12px;
+}
+.personal-detail{
+	float: left;
+	width: 100%;
+	margin-bottom: 30px;
+}
+.personal-detail .info-txt{
+	margin-bottom: 10px;
+}
+.personal-detail .form-item{
+	float: left;
+	width: 100%;
+}
+.personal-detail .postcode-control{
+	float: left;
+	width: 100%;
+}
+.personal-detail .form-item.form-item-postcode {
+    float: left;
+	width: 80%;
+}
+.personal-detail .form-item.form-item-postcode > label.control-label {
+    width: 25%;
+}
+.personal-detail .postcode-control .form-item > .form-text {
+    width: 73%; 
+}
+.personal-detail #address_lookup{
+	background: #034695 none repeat scroll 0 0;
+    border: medium none;
+    border-radius: 0;
+    color: #fff;
+    float: left;
+    height: auto;
+    padding: 11px 12px;
+    width: 20%;
+}
+.personal-detail .form-control,
+.car-detail .form-control{
+	background: #f3f5f5 none repeat scroll 0 0;
+    border: 1px solid #000;
+    border-radius: 0;
+    height: auto;
+    padding: 10px 12px;
+}
+.personal-detail .form-item label.control-label{
+	float: left;
+	width: 20%;
+}
+.personal-detail .form-item.checkbox label{
+	margin-bottom: 5px;
+	font-weight: bold;
+	padding-left: 0;
+}
+.personal-detail .form-item.checkbox input[type="checkbox"]{
+	margin-left: 0;
+}
+.personal-detail .form-item .form-text,
+.personal-detail .form-item .form-select
+{
+	float: left;
+	width: 80%;
+}
+.personal-detail .form-item .form-select{
+	-webkit-appearance: none;
+   	-moz-appearance: none;
+   	appearance: none;
+	 background: rgba(0, 0, 0, 0) url("../images/dropdown-arrow.png") no-repeat scroll 98% center / 2% auto;
+}
+.personal-detail .form-group.yn-btn{
+	margin-top: 15px;
+	display: inline-block;
+	width: 100%;
+}
+.personal-detail .form-yn-btn{
+	float: left;
+	width: 80%;
+}
+.continue-btn{
+	float: left;
+	width: 100%;
+}
+.continue-btn #edit-submit{
+	float: right;
+	padding: 6px 25px;
+	border-left: medium none;
+    border-right: medium none;
+    border-top: medium none;
+}
+.continue-btn .green-btn:hover{
+	background: #097582 none repeat scroll 0 0;
+    border-bottom: 4px solid #07606a;
+}
+
+/* END Mots Search By Registration */
+#block-block-18 h2 {
+    color: #fff;
+    font-size: 42px;
+    font-weight: bold;
+    line-height: 54px;
+    margin: 30px 0;
+}
+#mots-banner-section.commercial-recycling{
+	background: url("../images/recycle-banner.jpg");	
+} 

@@ -193,23 +193,35 @@
         <?php print render($page['sidebar_second']); ?>
       </aside>  <!-- /#sidebar-second -->
     <?php endif; ?>
-
   </div>
+</div>  
+  <?php if (!empty($page['mots_banner_section'])): 
+		$path = explode('/',drupal_get_path_alias($_GET['q']));		
+		$last = count($path) - 1;
+  ?>  
+    <section id="mots-banner-section" class="<?php echo $path[$last]; ?>">     
+        <div class="<?php print $container_class; ?>">
+            <div class="row">
+                <?php print render($page['mots_banner_section']); ?>
+            </div>
+        </div>  
+    </section> 
+  <?php endif; ?>  
     <?php if (!empty($page['content_bottom'])): ?>      
-    
+    <div class="<?php print $container_class; ?>">
         <div class="row"> 
             <?php print render($page['content_bottom']); ?> 
         </div>
-    
+    </div>
     <?php endif; ?>
     <?php if (!empty($page['content_bottom1'])): ?>      
-    
+    <div class="<?php print $container_class; ?>">
         <div class="row"> 
             <?php print render($page['content_bottom1']); ?> 
         </div>
-    
+    </div>
     <?php endif; ?>
-</div> 
+ 
 <?php if (!empty($page['service_carousel'])): ?> 
 <section id="grey-carousel">     
     <div class="<?php print $container_class; ?>">

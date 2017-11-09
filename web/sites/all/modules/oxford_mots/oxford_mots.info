@@ -1,0 +1,7 @@
+name = Oxford MOTs
+description = "Provides MOTs Booking functionality."
+version = 7.1
+core = 7.x
+package = Custom
+
+scripts[] = js/oxford_mots.js
