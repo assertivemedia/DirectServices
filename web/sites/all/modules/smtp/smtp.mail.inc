@@ -90,7 +90,7 @@ class SmtpMailSystem implements MailSystemInterface {
     $logging = variable_get('smtp_debugging', SMTP_LOGGING_ERRORS);
 
     // Turn on debugging, if requested.
-    if ($logging == SMTP_LOGGING_ALL) {
+    if ($logging == SMTP_LOGGING_ALL && user_access('administer smtp module')) {
       $mailer->SMTPDebug = TRUE;
     }
 
@@ -143,7 +143,7 @@ class SmtpMailSystem implements MailSystemInterface {
       }
       $headers['Reply-To'] = $reply;
     }
-    $properfrom = variable_get('site_mail', '');
+    $properfrom = variable_get('smtp_from', '');
     if (!empty($properfrom)) {
       $headers['From'] = $properfrom;
       $from = $properfrom;
@@ -176,7 +176,7 @@ class SmtpMailSystem implements MailSystemInterface {
 
     // Defines the From value to what we expect.
     $mailer->From     = $from_comp['email'];
-    $mailer->FromName = $from_comp['name'];
+    $mailer->FromName = empty($from_comp['name']) ? $from_name : $from_comp['name'];
     $mailer->Sender   = $from_comp['email'];
 
 
