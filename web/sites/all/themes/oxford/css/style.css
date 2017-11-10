@@ -2767,3 +2767,7 @@ width:55px;
 #mots-banner-section.commercial-recycling{
 	background: url("../images/recycle-banner.jpg");	
 } 
+
+#block-views-page-banner-block-1 .view-display-id-block_1{
+	position: relative;
+}
