@@ -19,7 +19,7 @@ function find_address_callback(){
 	//echo $postcode; exit;
 	
 	//$ApiKey = "a624550c-75f1-44e3-90ac-cc7482d2ee7d";
-	$ApiKey = "44F1ECA8-4DAB-46CB-A03C-D3B3C0E1D84E";
+	$ApiKey = "029E1603-36C3-47C0-A129-E631D5E28DF9";
 	$response = get_address_detail($ApiKey,$postcode);
 	
 	if($response['Response']['StatusCode'] == 'Success')
@@ -151,7 +151,7 @@ function oxford_vehicle_reg_form_submit($form, &$form_state){
 	if($form_state['values']['registration'] != '')
 	{
 		//$ApiKey = "a624550c-75f1-44e3-90ac-cc7482d2ee7d";
-		$ApiKey = "44F1ECA8-4DAB-46CB-A03C-D3B3C0E1D84E";
+		$ApiKey = "029E1603-36C3-47C0-A129-E631D5E28DF9";
 		$response = get_car_detail($ApiKey,$form_state['values']['registration']);
 		//print_r($response);exit;
 		
@@ -477,7 +477,20 @@ function get_address_detail($ApiKey,$postcode){
 }
 function oxford_search_by_registration_form_ajax_handle(&$form, &$form_state){
 	$form_state['rebuild'] = TRUE;
-	return $form;
+	
+	$commands = array();
+	$commands[] = array(
+	  // Note: we will use this command in the .js file
+	  'command' => 'redirectUser',
+	  // The path the user is directed to is given here
+	  'path' => '/thank-you',
+	);
+	if ($errors = form_get_errors()) {
+	  return $form;
+	} else {
+	  return array('#type' => 'ajax', '#commands' => $commands);
+	}
+	//return $form;
 }
 function oxford_search_by_registration_form_validate($form, &$form_state) {
   // YOUR CUSTOM VALIDATION CODE GOES HERE
@@ -524,7 +537,7 @@ function oxford_search_by_registration_form_submit($form, &$form_state){
 		//echo $html;
 		//exit; 
 		if (drupal_mail('oxford_mots', 'book_mots', $mailto, language_default(),$params,$mailfrom,TRUE)) 							 		{
-			drupal_set_message(t('Your Booking done successfully!!!'));
+			drupal_set_message(t('Your booking done successfully!!!'));
 			//$form_state['redirect'] = '/thank-you';
 			//$form_state['rebuild'] = TRUE;
 			$form_state['input'] = array();
