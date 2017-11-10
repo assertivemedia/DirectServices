@@ -18,4 +18,9 @@
 			
 		}
 	} 
+	Drupal.ajax.prototype.commands.redirectUser = function(ajax, response)
+	{
+	  // response.path is the path we gave in our Ajax callback
+	  window.location.replace(response.path);
+	};
 }(jQuery));  
